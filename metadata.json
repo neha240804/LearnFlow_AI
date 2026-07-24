@@ -1,0 +1,6 @@
+{
+  "name": "LearnFlow AI",
+  "description": "An AI-powered adaptive STEM learning platform that behaves like a personal tutor, mapping roadmaps, diagnostic quizzes, micro lessons, and flashcards with persistent mastery tracking.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

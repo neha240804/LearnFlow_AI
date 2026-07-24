@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+
+  xp        Int      @default(0)
+  streak    Int      @default(1)
+
+  progress  Progress[]
+  quizzes   QuizAttempt[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Progress {
+  id             String   @id @default(cuid())
+
+  subject        String
+  topic          String
+
+  confidence     Int
+  mastery        Int
+
+  completed      Boolean  @default(false)
+
+  timeSpent      Int      @default(0)
+  attempts       Int      @default(0)
+
+  weakConcepts   String[]
+  strongConcepts String[]
+
+  userId         String
+  user           User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([userId, topic])
+}
+
+model QuizAttempt {
+  id         String   @id @default(cuid())
+
+  topic      String
+  score      Int
+  confidence Int
+
+  answers    Json
+
+  userId     String
+  user       User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+}

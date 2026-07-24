@@ -1,0 +1,606 @@
+{
+  "users": [
+    {
+      "id": "student-1",
+      "name": "Alex Mercer",
+      "email": "student@learnflow.ai",
+      "role": "student",
+      "currentStreak": 1,
+      "lastActiveDate": "2026-07-22",
+      "xp": 1300,
+      "badges": [
+        "First Steps",
+        "Streak Master",
+        "Physics Pioneer"
+      ]
+    },
+    {
+      "id": "teacher-1",
+      "name": "Dr. Sarah Jenkins",
+      "email": "teacher@learnflow.ai",
+      "role": "teacher",
+      "currentStreak": 1,
+      "xp": 450,
+      "badges": [
+        "Course Builder",
+        "Mentor Extraordinaire"
+      ]
+    }
+  ],
+  "topics": [
+    {
+      "id": "topic-physics",
+      "title": "Classical Physics Mechanics",
+      "description": "Master fundamental motion concepts, Newton's three laws, forces, and momentum with adaptive micro lessons.",
+      "subject": "Physics",
+      "isCustom": false
+    },
+    {
+      "id": "topic-linear-algebra",
+      "title": "Linear Algebra Fundamentals",
+      "description": "Dive into vector spaces, matrix transformations, determinants, and the magic of eigenvalues and eigenvectors.",
+      "subject": "Mathematics",
+      "isCustom": false
+    }
+  ],
+  "concepts": [
+    {
+      "id": "concept-phys-1",
+      "topicId": "topic-physics",
+      "title": "Motion & Reference Frames",
+      "description": "Position, reference points, and coordinate systems in physics.",
+      "orderIndex": 1
+    },
+    {
+      "id": "concept-phys-2",
+      "topicId": "topic-physics",
+      "title": "Velocity vs. Speed",
+      "description": "Differentiating scalar speed from vector velocity with time-rate changes.",
+      "orderIndex": 2
+    },
+    {
+      "id": "concept-phys-3",
+      "topicId": "topic-physics",
+      "title": "Acceleration",
+      "description": "The rate of change of velocity, force connections, and deceleration.",
+      "orderIndex": 3
+    },
+    {
+      "id": "concept-phys-4",
+      "topicId": "topic-physics",
+      "title": "Newton's First Law (Inertia)",
+      "description": "The tendency of objects to resist changes in their state of motion.",
+      "orderIndex": 4
+    },
+    {
+      "id": "concept-phys-5",
+      "topicId": "topic-physics",
+      "title": "Newton's Second Law (F=ma)",
+      "description": "The quantitative relationship between force, mass, and acceleration.",
+      "orderIndex": 5
+    },
+    {
+      "id": "concept-phys-6",
+      "topicId": "topic-physics",
+      "title": "Newton's Third Law",
+      "description": "Action-reaction pairs and mechanical system interconnections.",
+      "orderIndex": 6
+    },
+    {
+      "id": "concept-phys-7",
+      "topicId": "topic-physics",
+      "title": "Momentum & Conservation",
+      "description": "Vector momentum, collision types, and isolated closed systems.",
+      "orderIndex": 7
+    },
+    {
+      "id": "concept-la-1",
+      "topicId": "topic-linear-algebra",
+      "title": "Vectors & Linear Combinations",
+      "description": "Vector additions, scalar scaling, spans, and linear independence.",
+      "orderIndex": 1
+    },
+    {
+      "id": "concept-la-2",
+      "topicId": "topic-linear-algebra",
+      "title": "Matrices & Linear Transformations",
+      "description": "Matrices as spatial transformers, coordinate shifts, and multiplications.",
+      "orderIndex": 2
+    },
+    {
+      "id": "concept-la-3",
+      "topicId": "topic-linear-algebra",
+      "title": "Determinants",
+      "description": "The scaling factor of area/volume transformations, invertibility criteria.",
+      "orderIndex": 3
+    },
+    {
+      "id": "concept-la-4",
+      "topicId": "topic-linear-algebra",
+      "title": "Eigenvalues & Eigenvectors",
+      "description": "Vectors that maintain their direction during transformations, and scale factors.",
+      "orderIndex": 4
+    }
+  ],
+  "lessons": [
+    {
+      "id": "lesson-phys-1",
+      "conceptId": "concept-phys-1",
+      "simpleExplanation": "Motion is just when something changes its position compared to a fixed point. For example, if you are sitting on a train, to your seat mate you aren't moving, but to someone standing on the platform, you are speeding by! That fixed point or observer is called the reference frame.",
+      "detailedExplanation": "In physics, motion is the change in position of an object over time relative to a reference frame. A reference frame is a coordinate system used to measure the position, velocity, and acceleration of objects. There is no absolute 'rest' in the universe; all motion is relative. Choosing a convenient reference frame makes solving complex mechanics equations much simpler.",
+      "analogy": "Think of a coordinate system on a chessboard. If you move a rook from A1 to A8, it is in motion relative to the board. However, if you move the entire chessboard across the room, the rook is stationary relative to the board, but in motion relative to the room itself.",
+      "example": "A runner moving on a cruise ship. If the ship speeds forward at 15 m/s, and the runner runs forward at 3 m/s relative to the deck, the runner's speed relative to a stationary observer in the water is 18 m/s (15 + 3).",
+      "diagramDescription": "A coordinate grid with two main observers: Observer A standing on the ground (Origin [0,0]), and Observer B inside a moving train coach moving at constant speed. A ball is dropped inside the train.",
+      "formulas": [
+        "Position: x(t)",
+        "Displacement: Δx = x_final - x_initial"
+      ],
+      "commonMistakes": [
+        "Confusing distance (total path traveled, scalar) with displacement (straight-line change in position, vector).",
+        "Assuming there is a single universal 'stationary' point of view."
+      ],
+      "summary": "All motion is relative and must be defined using a frame of reference. Displacement measures the shortest vector path between two coordinates, distinct from distance."
+    },
+    {
+      "id": "lesson-phys-2",
+      "conceptId": "concept-phys-2",
+      "simpleExplanation": "Speed is how fast you are moving. Velocity is how fast you are moving *and* in which direction. If you drive in a circle at 60 mph, your speed is constant, but your velocity is constantly changing because your direction is turning every second!",
+      "detailedExplanation": "Speed is a scalar quantity representing the magnitude of distance covered per unit of time. Velocity is a vector quantity representing the rate of change of an object's position with respect to a frame of reference. Because velocity is a vector, any change in either speed or direction results in a change in velocity, representing acceleration.",
+      "analogy": "If a GPS says 'Drive at 50 mph', it specifies speed. If it says 'Drive North at 50 mph on Highway 101', it specifies velocity.",
+      "example": "A spacecraft traveling through the void at a constant speed of 10,000 km/h. If it fires its thrusters to steer 5 degrees to the left without changing speed, its velocity has changed even though its speed remained identical.",
+      "diagramDescription": "A circular race track with a car at four different points. At each point, speed is labeled '50 m/s', but the velocity arrows point in different tangent directions (East, North, West, South).",
+      "formulas": [
+        "Average Speed = Distance / Time",
+        "Average Velocity = Δx / Δt",
+        "Instantaneous Velocity: v = dx/dt"
+      ],
+      "commonMistakes": [
+        "Using speed and velocity interchangeably in vector physics calculations.",
+        "Assuming that a constant speed implies a constant velocity, especially on curved paths."
+      ],
+      "summary": "Speed is a scalar (magnitude only), while velocity is a vector (magnitude and direction). Constant speed on a curved path means changing velocity."
+    },
+    {
+      "id": "lesson-phys-3",
+      "conceptId": "concept-phys-3",
+      "simpleExplanation": "Acceleration is how quickly your velocity changes. If you press the gas pedal in a sports car and go from 0 to 60 mph, you are accelerating. If you hit the brakes, you are decelerating (which is just negative acceleration). Even turning the steering wheel at a constant speed is acceleration because you are changing direction!",
+      "detailedExplanation": "Acceleration is defined as the vector rate of change of velocity over time. In calculus terms, it is the first derivative of velocity with respect to time, or the second derivative of position. Because it depends on velocity, an object accelerates if it changes its speed, its direction of travel, or both.",
+      "analogy": "Think of a roller coaster. You feel a heavy force pushing you into your seat not when you are going at a constant high speed, but when you zoom from slow to fast, or when the coaster whips around a sharp corner.",
+      "example": "A cheetah accelerates from rest (0 m/s) to 20 m/s in just 2.0 seconds. Its average acceleration is (20 - 0) / 2 = 10 m/s².",
+      "diagramDescription": "A timeline of a car moving from left to right. At t=0, v=0. At t=1s, v=5m/s. At t=2s, v=10m/s. The distance between positions increases with each second, showing acceleration.",
+      "formulas": [
+        "Average Acceleration = Δv / Δt",
+        "Instantaneous Acceleration: a = dv/dt = d²x/dt²",
+        "Kinematics: v = v0 + at",
+        "Kinematics: x = x0 + v0*t + 0.5*a*t²"
+      ],
+      "commonMistakes": [
+        "Thinking that zero velocity means zero acceleration (e.g., at the highest point of a thrown ball, velocity is zero but acceleration is -9.8 m/s²).",
+        "Assuming negative acceleration always means slowing down (if velocity is already negative, negative acceleration actually speeds it up!)."
+      ],
+      "summary": "Acceleration is the rate of velocity change. It occurs through changes in speed, direction, or both. Acceleration is zero if and only if velocity is constant in both magnitude and direction."
+    },
+    {
+      "id": "lesson-phys-4",
+      "conceptId": "concept-phys-4",
+      "simpleExplanation": "Newton's First Law says that objects are lazy. If an object is sitting still, it will stay still forever unless something pushes it. If it is already sliding at a steady speed, it will keep sliding forever in a straight line unless something (like friction or a wall) stops it. This laziness is called Inertia.",
+      "detailedExplanation": "Newton's First Law of Motion, often called the Law of Inertia, states that an object at rest remains at rest, and an object in motion continues in motion with a constant velocity (constant speed in a straight line) unless acted upon by a net external force. This law implies that force is not required to maintain motion, only to change it.",
+      "analogy": "Imagine a hockey puck sliding on a perfectly frictionless sheet of cosmic ice. It would slide forever at the exact same speed and direction until it hits a distant star's gravity or a space rock.",
+      "example": "When a bus driver slams on the brakes, the passengers lurch forward. Their bodies have inertia—they were moving forward with the bus, and they want to continue moving forward even though the bus has stopped.",
+      "diagramDescription": "A hockey puck on a frictionless surface with a velocity vector arrow pointing right, showing no force vectors acting on it, maintaining its constant speed vector infinitely.",
+      "formulas": [
+        "If ΣF = 0, then dv/dt = 0 (velocity is constant)"
+      ],
+      "commonMistakes": [
+        "Thinking that a force is required to keep an object moving. On Earth, friction is almost always present, making it look like things need a push to stay in motion.",
+        "Confusing inertia with a force itself. Inertia is a property of mass, not a pushing force."
+      ],
+      "summary": "Inertia is an object's resistance to change in motion. Without a net external force, an object's velocity vector remains completely constant."
+    },
+    {
+      "id": "lesson-phys-5",
+      "conceptId": "concept-phys-5",
+      "simpleExplanation": "Newton's Second Law is the famous formula: Force = Mass x Acceleration (F = ma). It means that if you want to push something to make it speed up, you need more force if that object is very heavy (large mass), or if you want it to speed up extremely fast (high acceleration).",
+      "detailedExplanation": "Newton's Second Law of Motion states that the acceleration of an object is directly proportional to the net force acting on it, and inversely proportional to its mass. Mathematically, the net force is equal to the rate of change of linear momentum, which simplifies to F = ma for an object with constant mass.",
+      "analogy": "Imagine pushing an empty shopping cart versus pushing a shopping cart full of heavy concrete blocks. You have to push the heavy cart with much more force to get it to speed up at the same rate as the empty one.",
+      "example": "If you push a 10 kg block with a net force of 50 Newtons, the acceleration of the block will be a = F / m = 50 N / 10 kg = 5 m/s².",
+      "diagramDescription": "Two scenarios: Scenario 1 showing a small mass with a medium force arrow creating a large acceleration arrow. Scenario 2 showing a massive block with the same medium force arrow, resulting in a tiny acceleration arrow.",
+      "formulas": [
+        "ΣF = m * a",
+        "Weight: W = m * g (where g ≈ 9.8 m/s² on Earth)"
+      ],
+      "commonMistakes": [
+        "Forgetting to use the NET force (the sum of ALL forces) in calculations. If friction is pushing back, you must subtract it from your pushing force first!",
+        "Confusing mass (kilograms, scalar, amount of matter) with weight (Newtons, vector, force due to gravity)."
+      ],
+      "summary": "Acceleration is directly proportional to net force and inversely proportional to mass. Force equals mass times acceleration (F=ma)."
+    },
+    {
+      "id": "lesson-phys-6",
+      "conceptId": "concept-phys-6",
+      "simpleExplanation": "Newton's Third Law says that forces always come in pairs. Every single time you push on something, it pushes back on you with the exact same amount of force, but in the opposite direction! 'For every action, there is an equal and opposite reaction.'",
+      "detailedExplanation": "Newton's Third Law of Motion states that when one body exerts a force on a second body, the second body simultaneously exerts a force equal in magnitude and opposite in direction on the first body. Forces always exist in mutual action-reaction pairs; a single isolated force is physically impossible.",
+      "analogy": "Imagine standing on a skateboard and throwing a heavy bowling ball forward. The action of throwing the ball pushes it forward, but the reaction force pushes *you* backward, causing your skateboard to roll in the opposite direction.",
+      "example": "A rocket engine blasting hot gas downwards. The rocket forces the exhaust gas down (action), and the gas forces the rocket body upwards with the exact same force (reaction), launching it into orbit.",
+      "diagramDescription": "A swimmer pushing off a pool wall. Arrow F1 represents the swimmer's feet pushing on the wall (points left). Arrow F2 represents the wall pushing on the swimmer's feet (points right). F1 and F2 are equal in length.",
+      "formulas": [
+        "F_A_on_B = -F_B_on_A"
+      ],
+      "commonMistakes": [
+        "Thinking action and reaction forces cancel each other out. They don't! They act on two different objects. The pool wall doesn't move because it is attached to the earth, but the swimmer does move.",
+        "Assuming the reaction force happens *after* the action. They are simultaneous."
+      ],
+      "summary": "Forces always exist in action-reaction pairs acting on different bodies. These forces are equal in magnitude and opposite in direction, occurring simultaneously."
+    },
+    {
+      "id": "lesson-la-1",
+      "conceptId": "concept-la-1",
+      "simpleExplanation": "A vector is just an arrow pointing in a specific direction with a certain length. You can add vectors together by placing them tip-to-tail, or scale them by multiplying them by numbers (scalars). If you combine these steps, you get a 'linear combination'.",
+      "detailedExplanation": "A vector is an element of a vector space, often represented as a column of numbers indicating coordinates. Vector addition and scalar multiplication are the two fundamental operations. A linear combination of vectors v1, v2, ..., vn is a sum of the form c1*v1 + c2*v2 + ... + cn*vn, where c1, c2, ..., cn are scalars. The set of all possible linear combinations of a set of vectors is called their Span.",
+      "analogy": "Imagine a GPS that can only take steps using two directions: '3 paces North-East' and '2 paces West'. Any final spot you can reach on the ground is a linear combination of those two basic steps.",
+      "example": "If v = [1, 2] and w = [3, -1], then a linear combination 2v + 3w = 2*[1,2] + 3*[3,-1] = [2, 4] + [9, -3] = [11, 1].",
+      "diagramDescription": "Vector v pointing from origin to (1,2), scaled vector 2v. Vector w from origin to (3,-1), scaled vector 3w. Placing them tip-to-tail to reach the final coordinate (11,1).",
+      "formulas": [
+        "c1*v1 + c2*v2 + ... + cn*vn",
+        "Span(v1, v2) = { c1*v1 + c2*v2 | c1, c2 ∈ ℝ }"
+      ],
+      "commonMistakes": [
+        "Trying to add vectors of different dimensions (e.g. adding a 2D vector to a 3D vector is undefined).",
+        "Confusing linear independence (none of the vectors can be made from a combination of the others) with spanning (the ability of vectors to reach every point in space)."
+      ],
+      "summary": "Vectors represent magnitude and direction. Linear combinations form the backbone of vector space spans and coordinate transformations."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "flash-phys-1a",
+      "conceptId": "concept-phys-1",
+      "front": "What is a Frame of Reference?",
+      "back": "A coordinate system used to measure and describe the position, velocity, and acceleration of objects."
+    },
+    {
+      "id": "flash-phys-1b",
+      "conceptId": "concept-phys-1",
+      "front": "Distance vs. Displacement",
+      "back": "Distance is a scalar representing the total path length. Displacement is a vector representing the straight-line distance between start and end."
+    },
+    {
+      "id": "flash-phys-2a",
+      "conceptId": "concept-phys-2",
+      "front": "What makes Velocity different from Speed?",
+      "back": "Velocity is a vector (has direction), whereas speed is a scalar (only magnitude)."
+    },
+    {
+      "id": "flash-phys-2b",
+      "conceptId": "concept-phys-2",
+      "front": "If you drive in a circle at constant speed, is velocity constant?",
+      "back": "No, velocity is changing because your direction of motion is constantly changing."
+    },
+    {
+      "id": "flash-phys-3a",
+      "conceptId": "concept-phys-3",
+      "front": "What is the standard unit of Acceleration?",
+      "back": "Meters per second squared (m/s²)."
+    },
+    {
+      "id": "flash-phys-3b",
+      "conceptId": "concept-phys-3",
+      "front": "Can an object have a velocity of zero but non-zero acceleration?",
+      "back": "Yes! At the peak of a thrown ball's flight, velocity is zero, but acceleration is -9.8 m/s²."
+    },
+    {
+      "id": "flash-phys-4a",
+      "conceptId": "concept-phys-4",
+      "front": "What is Inertia?",
+      "back": "The natural resistance of an object to any change in its state of rest or motion. Measured by its mass."
+    },
+    {
+      "id": "flash-phys-4b",
+      "conceptId": "concept-phys-4",
+      "front": "State Newton's First Law",
+      "back": "An object remains at rest or in uniform straight-line motion unless acted upon by a net external force."
+    },
+    {
+      "id": "flash-phys-5a",
+      "conceptId": "concept-phys-5",
+      "front": "Newton's Second Law Equation",
+      "back": "F = m * a (Force equals Mass times Acceleration)."
+    },
+    {
+      "id": "flash-phys-5b",
+      "conceptId": "concept-phys-5",
+      "front": "Mass vs. Weight",
+      "back": "Mass is the scalar quantity of matter (kg). Weight is the vector force of gravitational attraction on that mass (N)."
+    },
+    {
+      "id": "flash-phys-6a",
+      "conceptId": "concept-phys-6",
+      "front": "State Newton's Third Law",
+      "back": "For every action force, there is an equal and opposite reaction force occurring simultaneously on a different body."
+    },
+    {
+      "id": "flash-phys-6b",
+      "conceptId": "concept-phys-6",
+      "front": "Why don't action-reaction pairs cancel out?",
+      "back": "Because they act on two different bodies, not on the same body."
+    }
+  ],
+  "questions": [
+    {
+      "id": "q-phys-1-1",
+      "conceptId": "concept-phys-1",
+      "questionText": "If you walk 4 meters East, then 3 meters North, what is your displacement magnitude?",
+      "options": [
+        "7 meters",
+        "5 meters",
+        "1 meter",
+        "12 meters"
+      ],
+      "correctAnswer": "5 meters",
+      "explanation": "Displacement is the straight-line distance. By the Pythagorean theorem, √ (4² + 3²) = √ (16 + 9) = √ 25 = 5 meters."
+    },
+    {
+      "id": "q-phys-1-2",
+      "conceptId": "concept-phys-1",
+      "questionText": "Which of the following is a scalar quantity?",
+      "options": [
+        "Displacement",
+        "Velocity",
+        "Distance",
+        "Acceleration"
+      ],
+      "correctAnswer": "Distance",
+      "explanation": "Distance has only magnitude and no direction, making it a scalar. Displacement, velocity, and acceleration are all vectors."
+    },
+    {
+      "id": "q-phys-1-3",
+      "conceptId": "concept-phys-1",
+      "questionText": "Why do we need a reference frame in physics?",
+      "options": [
+        "To ensure objects move in straight lines",
+        "To calculate the absolute rest state of the universe",
+        "To establish a coordinate system for measuring motion relatively",
+        "To cancel out friction in equations"
+      ],
+      "correctAnswer": "To establish a coordinate system for measuring motion relatively",
+      "explanation": "There is no absolute rest; all motion is relative. A reference frame provides the coordinate system to measure variables relative to an observer."
+    },
+    {
+      "id": "q-phys-2-1",
+      "conceptId": "concept-phys-2",
+      "questionText": "A race car completes a lap on a circular track of radius R at a constant speed V. What is the car's average velocity for the complete lap?",
+      "options": [
+        "V",
+        "0",
+        "2 * π * R / V",
+        "V / (2 * π)"
+      ],
+      "correctAnswer": "0",
+      "explanation": "Average velocity is displacement divided by time. Since the car ends at the exact same point it started, its displacement is 0, so average velocity is 0."
+    },
+    {
+      "id": "q-phys-2-2",
+      "conceptId": "concept-phys-2",
+      "questionText": "If you travel 120 miles in 2 hours in a straight line, what was your average velocity?",
+      "options": [
+        "60 miles per hour",
+        "120 miles per hour",
+        "30 miles per hour",
+        "240 miles per hour"
+      ],
+      "correctAnswer": "60 miles per hour",
+      "explanation": "Average velocity is displacement / time = 120 miles / 2 hours = 60 mph in the direction of travel."
+    },
+    {
+      "id": "q-phys-2-3",
+      "conceptId": "concept-phys-2",
+      "questionText": "If speed is constant, can velocity be changing?",
+      "options": [
+        "No, velocity is speed by another name",
+        "Yes, if the object is changing its direction of motion",
+        "Yes, but only in outer space",
+        "No, unless mass also changes"
+      ],
+      "correctAnswer": "Yes, if the object is changing its direction of motion",
+      "explanation": "Velocity is a vector. Even if the speed (magnitude) is constant, changing the direction of motion (vector direction) changes the velocity."
+    },
+    {
+      "id": "q-phys-3-1",
+      "conceptId": "concept-phys-3",
+      "questionText": "If a ball is thrown straight up, what is its acceleration at the very top of its trajectory?",
+      "options": [
+        "0 m/s²",
+        "9.8 m/s² downwards",
+        "9.8 m/s² upwards",
+        "Depends on the weight of the ball"
+      ],
+      "correctAnswer": "9.8 m/s² downwards",
+      "explanation": "At the peak, the velocity is momentarily zero, but gravity is still pulling on the ball with a constant acceleration of 9.8 m/s² downwards. If acceleration were zero, the ball would remain suspended in mid-air!"
+    },
+    {
+      "id": "q-phys-3-2",
+      "conceptId": "concept-phys-3",
+      "questionText": "An object moving at 5 m/s accelerates at 2 m/s² for 3 seconds. What is its final velocity?",
+      "options": [
+        "11 m/s",
+        "6 m/s",
+        "15 m/s",
+        "13 m/s"
+      ],
+      "correctAnswer": "11 m/s",
+      "explanation": "Using v = v0 + at: final velocity = 5 + (2 * 3) = 11 m/s."
+    },
+    {
+      "id": "q-phys-4-1",
+      "conceptId": "concept-phys-4",
+      "questionText": "What property of an object directly determines the amount of inertia it possesses?",
+      "options": [
+        "Velocity",
+        "Volume",
+        "Mass",
+        "Shape"
+      ],
+      "correctAnswer": "Mass",
+      "explanation": "Mass is the quantitative measure of an object's inertia. A larger mass has greater resistance to changes in its state of motion."
+    },
+    {
+      "id": "q-phys-4-2",
+      "conceptId": "concept-phys-4",
+      "questionText": "A sliding hockey puck slowly slows down on real ice. Does this violate Newton's First Law?",
+      "options": [
+        "Yes, it should go on forever",
+        "No, because a net external force of friction is acting on it",
+        "No, because the puck naturally wants to rest",
+        "Yes, but only because Earth is curved"
+      ],
+      "correctAnswer": "No, because a net external force of friction is acting on it",
+      "explanation": "Newton's First Law states velocity is constant UNLESS acted on by an external force. Friction is that external force pushing back and slowing the puck."
+    },
+    {
+      "id": "q-phys-5-1",
+      "conceptId": "concept-phys-5",
+      "questionText": "If a 5 kg object experiences a net force of 20 Newtons, what is its resulting acceleration?",
+      "options": [
+        "100 m/s²",
+        "4 m/s²",
+        "15 m/s²",
+        "0.25 m/s²"
+      ],
+      "correctAnswer": "4 m/s²",
+      "explanation": "From F = ma, a = F / m = 20 N / 5 kg = 4 m/s²."
+    },
+    {
+      "id": "q-phys-5-2",
+      "conceptId": "concept-phys-5",
+      "questionText": "You pull a sled on snow. Your pulling force is 50 N, and the friction force pushing backwards is 10 N. The mass of the sled is 10 kg. What is its acceleration?",
+      "options": [
+        "5 m/s²",
+        "6 m/s²",
+        "4 m/s²",
+        "1 m/s²"
+      ],
+      "correctAnswer": "4 m/s²",
+      "explanation": "Net force = Pulling - Friction = 50 N - 10 N = 40 N. Acceleration = F_net / m = 40 N / 10 kg = 4 m/s²."
+    },
+    {
+      "id": "q-phys-6-1",
+      "conceptId": "concept-phys-6",
+      "questionText": "A heavy truck collides head-on with a tiny subcompact car. During the collision, which vehicle experiences the greater force?",
+      "options": [
+        "The heavy truck",
+        "The subcompact car",
+        "They experience the exact same force magnitude",
+        "The vehicle traveling at a higher speed"
+      ],
+      "correctAnswer": "They experience the exact same force magnitude",
+      "explanation": "According to Newton's Third Law, forces always occur in equal and opposite action-reaction pairs. Therefore, the force the truck exerts on the car is exactly equal in magnitude to the force the car exerts on the truck. (The car experiences greater acceleration because its mass is much smaller!)."
+    },
+    {
+      "id": "q-phys-6-2",
+      "conceptId": "concept-phys-6",
+      "questionText": "If you push on a heavy stone wall, why doesn't the wall move, and why don't you accelerate backwards?",
+      "options": [
+        "The wall does not push back on you",
+        "Static friction from the ground acts on your feet to balance the wall's reaction force",
+        "Newton's Third Law is disabled for stationary stone walls",
+        "Your mass is infinite compared to the wall"
+      ],
+      "correctAnswer": "Static friction from the ground acts on your feet to balance the wall's reaction force",
+      "explanation": "The wall pushes back with the same force, but static friction between your shoes and the floor holds you in place, preventing your acceleration backwards."
+    }
+  ],
+  "quizAttempts": [],
+  "progress": [
+    {
+      "userId": "student-1",
+      "conceptId": "concept-phys-1",
+      "accuracy": 100,
+      "attempts": 1,
+      "confidence": "high",
+      "responseTimeSec": 15,
+      "masteryScore": 100,
+      "status": "Mastered",
+      "updatedAt": "2026-07-06T14:30:00Z"
+    },
+    {
+      "userId": "student-1",
+      "conceptId": "concept-phys-2",
+      "accuracy": 66,
+      "attempts": 1,
+      "confidence": "medium",
+      "responseTimeSec": 25,
+      "masteryScore": 66,
+      "status": "Weak",
+      "updatedAt": "2026-07-06T14:40:00Z"
+    },
+    {
+      "userId": "student-1",
+      "conceptId": "newtons-first-law-of-motion-the-law-of-inertia-including-examples-and-applications",
+      "accuracy": 0,
+      "attempts": 0,
+      "confidence": "medium",
+      "responseTimeSec": 0,
+      "masteryScore": 25,
+      "status": "Weak",
+      "updatedAt": "2026-07-17T17:23:52.274Z"
+    },
+    {
+      "userId": "student-1",
+      "conceptId": "differentiation-rules",
+      "accuracy": 0,
+      "attempts": 0,
+      "confidence": "medium",
+      "responseTimeSec": 0,
+      "masteryScore": 42,
+      "status": "Weak",
+      "updatedAt": "2026-07-17T17:28:24.623Z"
+    },
+    {
+      "userId": "student-1",
+      "conceptId": "introduction-to-forces-understanding-the-basics-of-forces-including-types-of-forces-and-how-they-interact-with-objects",
+      "accuracy": 0,
+      "attempts": 0,
+      "confidence": "medium",
+      "responseTimeSec": 0,
+      "masteryScore": 33,
+      "status": "Weak",
+      "updatedAt": "2026-07-17T17:30:49.300Z"
+    },
+    {
+      "userId": "student-1",
+      "conceptId": "trigonometric-identities",
+      "accuracy": 0,
+      "attempts": 0,
+      "confidence": "medium",
+      "responseTimeSec": 0,
+      "masteryScore": 33,
+      "status": "Weak",
+      "updatedAt": "2026-07-19T12:35:22.912Z"
+    },
+    {
+      "userId": "student-1",
+      "accuracy": 0,
+      "attempts": 0,
+      "confidence": "medium",
+      "responseTimeSec": 0,
+      "masteryScore": 0,
+      "status": "Weak",
+      "updatedAt": "2026-07-24T14:43:30.587Z"
+    }
+  ],
+  "recommendations": [
+    {
+      "id": "rec-1",
+      "userId": "student-1",
+      "title": "Strengthen Your Vector Velocity Skills!",
+      "description": "You scored 66% on the Velocity vs. Speed quiz. Study the recommended micro lesson to bridge this learning gap.",
+      "type": "weak_concept",
+      "conceptId": "concept-phys-2",
+      "topicId": "topic-physics"
+    }
+  ],
+  "uploadedPDFs": [],
+  "timeSpentMinutes": {
+    "student-1": 45
+  }
+}
