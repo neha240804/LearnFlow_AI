@@ -14,10 +14,9 @@ export default function TopicInput({
 
       <div className="flex items-center gap-3">
 
-        <FiBookOpen
-          size={30}
-          className="text-indigo-600"
-        />
+        <span className="text-indigo-600">
+          <FiBookOpen size={30} />
+        </span>
 
         <h2 className="text-2xl font-bold">
           Enter a Topic

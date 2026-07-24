@@ -4,7 +4,6 @@ dotenv.config();
 import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
-import { dbManager, User, Topic, Concept, Lesson, Flashcard, Question, QuizAttempt, ConceptProgress, Recommendation } from "./src/server/db.ts";
 import multer from "multer";
 import fs from "fs";
 import {
@@ -17,6 +16,8 @@ import OpenAI from "openai";
 import prisma from "./src/server/config/prisma";
 import authRoutes from "./src/server/routes/auth";
 import profileRoutes from "./src/server/routes/profile";
+import progressRoutes from "./src/server/routes/progress";
+import { authenticate } from "./src/server/middleware/auth";
 const PORT = 3000;
 
 async function startServer() {
@@ -35,157 +36,43 @@ async function startServer() {
   app.use(express.urlencoded({ extended: true, limit: '15mb' }));
   app.use("/api/auth", authRoutes);
   app.use("/api/profile", profileRoutes);
+  app.use("/api/progress", progressRoutes);
+  
   // Request logger helper
   app.use((req, res, next) => {
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
     next();
   });
 
-  
-app.post("/api/progress", async (req, res) => {
+  app.post("/api/quiz", authenticate, async (req: any, res) => {
     try {
       const {
-        userId,
-        subject,
         topic,
+        score,
         confidence,
-        mastery,
-        weakConcepts,
-        strongConcepts,
-        completed,
-        attempts,
-        timeSpent,
+        answers,
       } = req.body;
+      const userId = req.user?.id || req.body.userId;
 
-      const progress = await prisma.progress.upsert({
-        where: {
-          userId_topic: {
-            userId,
-            topic,
-          },
-        },
-        update: {
-          confidence,
-          mastery,
-          weakConcepts,
-          strongConcepts,
-          completed,
-          attempts,
-          timeSpent,
-        },
-        create: {
-          userId,
-          subject,
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const quiz = await prisma.quizAttempt.create({
+        data: {
           topic,
+          score,
           confidence,
-          mastery,
-          weakConcepts,
-          strongConcepts,
-          completed,
-          attempts,
-          timeSpent,
+          answers: answers || [],
+          userId,
         },
       });
 
-      return res.json({
-        success: true,
-        progress,
-      });
-
+      res.json(quiz);
     } catch (err) {
-
       console.error(err);
-
-      return res.status(500).json({
-        success: false,
-        message: "Failed to save progress",
-      });
-
+      res.status(500).json({ message: "Failed to record quiz attempt" });
     }
-  });
-  app.get("/api/progress/:userId", async (req, res) => {
-
-      try{
-
-          const {userId}=req.params;
-
-          const progress=await prisma.progress.findMany({
-
-              where:{
-                  userId
-              }
-
-          });
-
-          res.json(progress);
-
-      }
-
-      catch(err){
-
-          console.log(err);
-
-          res.status(500).json({
-
-              message:"Failed"
-
-          });
-
-      }
-
-  });
-  app.post("/api/quiz", async (req, res) => {
-
-      try{
-
-          const{
-
-              topic,
-
-              score,
-
-              confidence,
-
-              answers,
-
-              userId
-
-          }=req.body;
-
-          const quiz=await prisma.quizAttempt.create({
-
-              data:{
-
-                  topic,
-
-                  score,
-
-                  confidence,
-
-                  answers,
-
-                  userId
-
-              }
-
-          });
-
-          res.json(quiz);
-
-      }
-
-      catch(err){
-
-          console.log(err);
-
-          res.status(500).json({
-
-              message:"Failed"
-
-          });
-
-      }
-
   });
   app.post("/api/analyze", async (req, res) => {
     try {
@@ -357,83 +244,7 @@ app.get("/api/concepts/:conceptId/quiz", async (req, res) => {
     }
   });
 
-  /**
-   * POST /api/progress
-   * Body: { topicId, conceptId, xp, completed, mastery, streak, timeSpent }
-   * Saves lesson progress to the database.
-   */
-  app.post("/api/progress", (req, res) => {
-  try {
-    const { topicId, conceptId, xp, completed, mastery, streak } = req.body;
-    const db = dbManager.get();
 
-    let progress = db.progress?.find(
-      (p: { conceptId: string }) => p.conceptId === conceptId
-    );
-
-    if (progress) {
-      progress.masteryScore = mastery ?? progress.masteryScore;
-      progress.status =
-        completed ? "Mastered" : mastery >= 70 ? "Learning" : "Weak";
-      progress.updatedAt = new Date().toISOString();
-    } else {
-      const newProgress = {
-        userId: db.users?.[0]?.id || "student-1",
-        subject: topicId,
-        conceptId,
-        accuracy: 0,
-        attempts: 0,
-        confidence: "medium" as const,
-        responseTimeSec: 0,
-        masteryScore: mastery ?? 0,
-        status:
-          completed
-            ? "Mastered"
-            : mastery >= 70
-            ? "Learning"
-            : "Weak",
-        updatedAt: new Date().toISOString(),
-      };
-
-      if (!db.progress) {
-        db.progress = [];
-      }
-
-      db.progress.push(newProgress);
-    }
-
-    const user = db.users?.[0];
-
-    if (user) {
-      const earnedXP =
-        50 +
-        (mastery ?? 0) +
-        (completed ? 30 : 0);
-
-      user.xp = (user.xp ?? 0) + earnedXP;
-
-      if (streak > 0) {
-        user.currentStreak = Math.max(
-          user.currentStreak ?? 0,
-          streak
-        );
-      }
-    }
-
-    dbManager.save();
-
-    return res.json({
-      success: true,
-    });
-
-  } catch (error) {
-    console.error("[/api/progress]", error);
-
-    return res.json({
-      success: false,
-    });
-  }
-});
 
   // ==========================================
   // VITE DEVELOPMENT MIDDLEWARE & STATIC ASSETS

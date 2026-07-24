@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
+import type { Accept } from "react-dropzone";
 import {
   UploadCloud,
   FileText,
@@ -25,15 +26,18 @@ export default function UploadBox({
     [setSelectedFile]
   );
 
+  const acceptedTypes: Accept = {
+    "application/pdf": [".pdf"],
+    "image/png": [".png"],
+    "image/jpeg": [".jpg", ".jpeg"],
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     multiple: false,
-    accept: {
-      "application/pdf": [".pdf"],
-      "image/png": [".png"],
-      "image/jpeg": [".jpg", ".jpeg"],
-    },
+    accept: acceptedTypes,
     onDrop,
-  });
+  } as any);
 
   return (
     <div className="bg-white rounded-2xl shadow-md p-6 h-full">

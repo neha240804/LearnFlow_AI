@@ -347,6 +347,7 @@ function buildDiagnosticQuizFallback(roadmap: RoadmapConcept[]): DiagnosticQuizR
       ],
       correctAnswer: 0,
       explanation: `This checks basic understanding of ${concept.title}.`,
+      difficulty: "Medium",
     };
   });
 

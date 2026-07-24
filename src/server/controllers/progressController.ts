@@ -6,15 +6,15 @@ export const saveProgress = async (req: any, res: Response) => {
     const userId = req.user.id;
 
     const {
-      subject,
+      subject = "General STEM",
       topic,
-      confidence,
-      mastery,
-      weakConcepts,
-      strongConcepts,
-      completed,
-      attempts,
-      timeSpent,
+      confidence = 0,
+      mastery = 0,
+      weakConcepts = [],
+      strongConcepts = [],
+      completed = false,
+      attempts = 1,
+      timeSpent = 0,
     } = req.body;
 
     const progress = await prisma.progress.upsert({
@@ -29,27 +29,37 @@ export const saveProgress = async (req: any, res: Response) => {
         mastery,
         weakConcepts,
         strongConcepts,
-        attempts,
+        attempts: { increment: 1 },
         completed,
+        timeSpent: { increment: timeSpent },
       },
       create: {
         userId,
-        subject,
+        subject: subject || "General STEM",
         topic,
         confidence,
         mastery,
         weakConcepts,
         strongConcepts,
-        attempts,
+        attempts: attempts || 1,
         completed,
-        timeSpent,
+        timeSpent: timeSpent || 0,
       },
     });
 
-    res.json(progress);
+    // Award XP to user in PostgreSQL
+    const earnedXP = 50 + (mastery ?? 0) + (completed ? 30 : 0);
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        xp: { increment: earnedXP },
+      },
+    }).catch(console.error);
+
+    res.json({ success: true, progress });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "Error saving progress" });
+    res.status(500).json({ success: false, message: "Error saving progress" });
   }
 };
 

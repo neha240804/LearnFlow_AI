@@ -154,12 +154,11 @@ export default function ConceptQuiz() {
 
     }
     async function handleNext() {
-
         const token = localStorage.getItem("token");
+        const masteryScore = Math.round((score / (quiz?.questions.length || 1)) * 100);
 
         try {
-
-            await fetch("http://localhost:3000/api/quiz", {
+            await fetch("/api/quiz", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -168,20 +167,33 @@ export default function ConceptQuiz() {
                 body: JSON.stringify({
                     topic,
                     score,
-                    confidence: Math.round(
-                        (score / quiz!.questions.length) * 100
-                    ),
+                    confidence: masteryScore,
                     answers: [],
-                    userId: JSON.parse(localStorage.getItem("user")!).id,
                 }),
             });
+
+            // Also update topic progress in PostgreSQL
+            await fetch("/api/progress", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    topic,
+                    confidence: masteryScore,
+                    mastery: masteryScore,
+                    completed: current + 1 >= weak.length,
+                    attempts: 1,
+                    timeSpent: 5,
+                }),
+            }).catch(console.error);
 
         } catch (err) {
             console.error(err);
         }
 
         if (current + 1 < weak.length) {
-
             navigate("/lesson", {
                 state: {
                     topic,
@@ -189,11 +201,8 @@ export default function ConceptQuiz() {
                     current: current + 1,
                 },
             });
-
         } else {
-
             navigate("/dashboard");
-
         }
     }
     return (

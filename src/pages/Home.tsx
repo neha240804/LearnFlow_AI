@@ -23,21 +23,30 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem("learnflow-user");
+    const stored = localStorage.getItem("user") || localStorage.getItem("learnflow-user");
+    const token = localStorage.getItem("token");
 
-    if (!stored) return;
+    if (stored) {
+      try {
+        const user = JSON.parse(stored);
+        if (user.name) setUserName(user.name);
+      } catch (e) {}
+    }
 
-    const user = JSON.parse(stored);
-
-    setUserName(user.name);
-
-    fetch("/api/profile")
-      .then((res) => res.json())
-      .then((data) => {
-        setXp(data.xp);
-        setLevel(data.level);
+    if (token) {
+      fetch("/api/profile", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       })
-      .catch(console.error);
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.name) setUserName(data.name);
+          if (data.xp !== undefined) setXp(data.xp);
+          if (data.level) setLevel(data.level);
+        })
+        .catch(console.error);
+    }
   }, []);
 
   async function handleAnalyze() {

@@ -58,117 +58,66 @@ export default function Login() {
         }
     }
 
-    return(
-
-        <div className="min-h-screen bg-slate-100 flex justify-center items-center">
-
+    return (
+        <div className="min-h-screen bg-slate-100 flex justify-center items-center p-4">
             <div className="bg-white shadow-xl rounded-3xl w-full max-w-md p-10">
-
                 <h1 className="text-4xl font-bold text-center">
-
                     Welcome Back 👋
-
                 </h1>
 
                 <p className="text-center text-gray-500 mt-3">
-
                     Continue your personalized STEM learning.
-
                 </p>
 
                 <div className="mt-8">
-
                     <label className="font-semibold">
-
                         Email
-
                     </label>
-
                     <input
-
-                    className="mt-2 border rounded-xl w-full p-3"
-
-                    value={email}
-
-                    onChange={(e)=>setEmail(e.target.value)}
-
-                    placeholder="student@learnflow.ai"
-
+                        className="mt-2 border rounded-xl w-full p-3"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="student@learnflow.ai"
                     />
-
                 </div>
 
                 <div className="mt-5">
-
                     <label className="font-semibold">
-
                         Password
-
                     </label>
-
                     <input
-
-                    type="password"
-
-                    className="mt-2 border rounded-xl w-full p-3"
-
-                    value={password}
-
-                    onChange={(e)=>setPassword(e.target.value)}
-
-                    placeholder="Enter password"
-
+                        type="password"
+                        className="mt-2 border rounded-xl w-full p-3"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Enter password"
                     />
-
                 </div>
 
-                {
-
-                    error &&
-
-                    <p className="text-red-500 mt-4">
-
+                {error && (
+                    <p className="text-red-500 mt-4 text-sm">
                         {error}
-
                     </p>
-
-                }
+                )}
 
                 <button
-
-                onClick={handleLogin}
-
-                disabled={loading}
-
-                className="mt-8 w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl"
-
+                    onClick={handleLogin}
+                    disabled={loading}
+                    className="mt-8 w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white py-3 rounded-xl font-semibold transition"
                 >
-
-                    {
-
-                        loading ?
-
-                        "Logging in..." :
-
-                        "Login"
-
-                    }
-
+                    {loading ? "Logging in..." : "Login"}
                 </button>
 
+                <p className="text-center mt-6 text-gray-600 text-sm">
+                    Don't have an account?{" "}
+                    <Link
+                        to="/register"
+                        className="text-indigo-600 font-semibold hover:underline"
+                    >
+                        Register
+                    </Link>
+                </p>
             </div>
-            <p className="text-center mt-6 text-gray-600">
-                Don't have an account?{" "}
-                <Link
-                    to="/register"
-                    className="text-indigo-600 font-semibold hover:underline"
-                >
-                    Register
-                </Link>
-            </p>
-
         </div>
-
-    )
-
+    );
 }

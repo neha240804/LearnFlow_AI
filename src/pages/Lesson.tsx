@@ -14,60 +14,76 @@ interface LessonResponse {
 
 export default function Lesson() {
   const navigate = useNavigate();
-  const { state } = useLocation();
+  const location = useLocation();
 
-  const { topic } = state;
+  const state = location.state || {};
+  const topic = state.topic || "Physics";
 
-  const [weak,setWeak]=useState<string[]>([]);
+  const initialCurrent = state.current !== undefined ? state.current : 0;
+  const initialWeak = state.weak && state.weak.length > 0 ? state.weak : (state.concept ? [state.concept] : []);
 
-  const [current,setCurrent]=useState(0);
+  const [weak, setWeak] = useState<string[]>(initialWeak);
+  const [current, setCurrent] = useState<number>(initialCurrent);
   const [lesson, setLesson] = useState<LessonResponse | null>(null);
-  const [current, setCurrent] = useState(initialCurrent);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadProgress();
+    if (weak.length === 0) {
+      loadProgress();
+    }
   }, []);
 
-  async function loadProgress(){
+  async function loadProgress() {
+    const token = localStorage.getItem("token");
+    if (!token) return;
 
-  const token=localStorage.getItem("token");
+    try {
+      const response = await fetch("/api/progress", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-  const response=await fetch(
-  "http://localhost:5000/api/progress",
-  {
-  headers:{
-  Authorization:`Bearer ${token}`
-  }
-  });
-
-  const data=await response.json();
-
-  const progress=data.find(
-  (p:any)=>p.topic===topic
-  );
-
-  setWeak(progress.weakConcepts);
-
-  }
-
-  useEffect(()=>{
-
-  if(weak.length>0){
-
-  loadLesson();
-
+      if (response.ok) {
+        const data = await response.json();
+        const progress = Array.isArray(data) ? data.find((p: any) => p.topic === topic) : null;
+        if (progress?.weakConcepts && progress.weakConcepts.length > 0) {
+          setWeak(progress.weakConcepts);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    }
   }
 
-},[weak,current]);
+  useEffect(() => {
+    if (weak.length > 0 && current < weak.length) {
+      loadLesson();
+    } else if (weak.length === 0) {
+      // Fallback topic concept
+      loadLessonForConcept(state.concept || topic);
+    }
+  }, [weak, current]);
+
+  async function loadLessonForConcept(conceptTitle: string) {
+    setLoading(true);
+    try {
+      const data = await getLesson(topic, conceptTitle, current);
+      setLesson(data);
+    } catch (error) {
+      console.error(error);
+    }
+    setLoading(false);
+  }
 
   async function loadLesson() {
     setLoading(true);
 
     try {
+      const conceptTitle = weak[current] || state.concept || topic;
       const data = await getLesson(
         topic,
-        weak[current],
+        conceptTitle,
         current
       );
 

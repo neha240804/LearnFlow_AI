@@ -87,40 +87,44 @@ export default function Diagnostic() {
     });
     const token = localStorage.getItem("token");
 
-    await fetch("http://localhost:5000/api/progress",{
-        method:"POST",
-        headers:{
-            "Content-Type":"application/json",
-            Authorization:`Bearer ${token}`
+    try {
+      await fetch("/api/progress", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body:JSON.stringify({
+        body: JSON.stringify({
+          subject: data.subject || "General STEM",
+          topic: data.topic,
+          confidence: mastery,
+          mastery,
+          weakConcepts: weak,
+          strongConcepts: strong,
+          attempts: 1,
+          completed: false,
+          timeSpent: 0,
+        }),
+      });
+    } catch (err) {
+      console.error("Failed to save diagnostic progress:", err);
+    }
 
-            subject:data.subject,
+    const startConcept = weak.length > 0 ? weak[0] : (data.roadmap?.[0]?.title || "Core Concepts");
 
-            topic:data.topic,
-
-            confidence:mastery,
-
-            mastery,
-
-            weakConcepts:weak,
-
-            strongConcepts:strong,
-
-            attempts:1,
-
-            completed:false,
-
-            timeSpent:0
-
-        })
+    navigate("/learning-profile", {
+      state: {
+        topic: data.topic,
+        mastery,
+        strong,
+        average,
+        weak,
+        roadmap: data.roadmap || [],
+        startConcept,
+        estimatedTime: data.estimatedTime || "15 mins",
+      },
     });
-
-    navigate("/learning-profile",{
-        state:{
-            topic:data.topic
-        }
-    });
+  }
 
   return (
     <div className="min-h-screen bg-slate-100">

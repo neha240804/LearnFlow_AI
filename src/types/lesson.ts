@@ -7,3 +7,8 @@ export interface LessonTopic {
   commonMistakes: string[];
   summary: string;
 }
+
+export interface RoadmapConcept {
+  title: string;
+  description: string;
+}

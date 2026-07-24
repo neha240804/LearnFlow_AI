@@ -4,7 +4,7 @@ import {
   getProgress,
   updateProgress,
 } from "../controllers/progressController";
-import authenticate from "../middleware/authenticate";
+import { authenticate } from "../middleware/auth";
 
 const router = Router();
 
@@ -14,4 +14,4 @@ router.get("/", authenticate, getProgress);
 
 router.patch("/:topic", authenticate, updateProgress);
 
-export default router;
+export default router;
