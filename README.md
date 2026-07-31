@@ -1,20 +1,66 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# 🚀 LearnFlow AI
 
-# Run and deploy your AI Studio app
+> **Adaptive STEM Learning Platform Powered by AI**
 
-This contains everything you need to run your app locally.
+LearnFlow AI generates custom learning roadmaps, analyzes uploaded study notes/PDFs with OCR, and builds dynamic diagnostic quizzes tailored to each student's pace and mastery level.
 
-View your app in AI Studio: https://ai.studio/apps/3d5cf58a-d4ba-4fa2-a3be-093bf6fb7b55
+---
 
-## Run Locally
+## ✨ Features
 
-**Prerequisites:**  Node.js
+- 🎯 **Diagnostic Knowledge Assessment**: Pinpoint weak & strong concepts before building a custom curriculum.
+- 📚 **AI Note & PDF Parser**: Upload study notes or multi-page PDFs to get instant structured explanations and auto-generated quizzes.
+- 🗺️ **Personalized Concept Roadmaps**: Step-by-step micro-modules designed for optimal understanding.
+- 🤖 **Interactive AI Tutor Chat**: Instant concept assistance available at every step of your lesson.
+- 🔥 **Gamified Progress Tracking**: Earn XP points, maintain daily streaks, track mastery levels, and monitor confidence stats on a personal dashboard.
+- 🔐 **Secure Authentication**: JWT-based user authentication and progress persistence with PostgreSQL.
 
+---
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## 🛠️ Tech Stack
+
+- **Frontend**: React 19, TypeScript, Vite, Tailwind CSS, Lucide Icons, Framer Motion
+- **Backend**: Node.js, Express, Prisma ORM
+- **Database**: PostgreSQL (Neon DB)
+- **AI & Processing**: Groq SDK (Llama 3 models), Google GenAI, Tesseract.js (OCR), PDF-Parse
+
+---
+
+## 🚀 Getting Started Locally
+
+### Prerequisites
+- Node.js (v18+ recommended)
+- PostgreSQL Database (or Neon PostgreSQL connection string)
+
+### 1. Install Dependencies
+```bash
+npm install
+```
+
+### 2. Configure Environment Variables
+Copy `.env.example` to `.env` and fill in your keys:
+```bash
+cp .env.example .env
+```
+
+Set the following in `.env`:
+- `GROQ_API_KEY`: Your Groq API Key
+- `DATABASE_URL`: PostgreSQL connection string
+- `JWT_SECRET`: Random 64-character secret key
+
+### 3. Setup Database Schema
+```bash
+npx prisma db push
+```
+
+### 4. Run Development Server
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+---
+
+## 📜 License
+MIT License. Created for Hackathon presentation.
+

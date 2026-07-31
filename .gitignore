@@ -4,7 +4,20 @@ dist/
 coverage/
 .DS_Store
 *.log
-.env*
+
+# Environment files — never commit secrets
+.env
+.env.*
 !.env.example
 
+# Prisma generated
 /src/generated/prisma
+
+# Dev scratch files
+scratch_test.ts
+testGroq.ts
+learnflow_db.json
+venv/
+
+# OS artefacts
+Thumbs.db
