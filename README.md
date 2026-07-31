@@ -4,18 +4,19 @@
 
 ### *Adaptive, Hyper-Personalized STEM Learning Powered by AI*
 
+[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-learnflow--ai--vbmo.onrender.com-46E3B7?style=for-the-badge&logo=render)](https://learnflow-ai-vbmo.onrender.com/)
 [![React](https://img.shields.io/badge/Frontend-React_19-blue?style=for-the-badge&logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/Language-TypeScript_5-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Backend-Node.js_Express-339933?style=for-the-badge&logo=nodedotjs)](https://nodejs.org/)
 [![Prisma](https://img.shields.io/badge/ORM-Prisma-2D3748?style=for-the-badge&logo=prisma)](https://www.prisma.io/)
 [![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL_(Neon)-4169E1?style=for-the-badge&logo=postgresql)](https://neon.tech/)
-[![Groq](https://img.shields.io/badge/AI_Engine-Groq_Llama_3.1-F05032?style=for-the-badge)](https://groq.com/)
 
-[Live Demo](#-deployment) • [Key Features](#-key-features) • [System Architecture](#-system-architecture) • [Getting Started](#-getting-started-locally) • [API Documentation](#-api-endpoints)
+[🌐 Live Website](https://learnflow-ai-vbmo.onrender.com/) • [Key Features](#-key-features) • [System Architecture](#-system-architecture) • [Getting Started](#-getting-started-locally) • [API Documentation](#-api-endpoints)
 
 ---
 
 </div>
+
 
 ## 💡 The Problem & Solution
 
@@ -138,12 +139,14 @@ Open **[http://localhost:3000](http://localhost:3000)** in your browser.
 
 ---
 
-## 🌐 Deployment
+## 🌐 Deployment & Live Link
 
-The application is configured for deployment on **Render** (via `render.yaml`):
+The application is deployed live on **Render**:
 
+- **🚀 Live Application**: **[https://learnflow-ai-vbmo.onrender.com/](https://learnflow-ai-vbmo.onrender.com/)**
 - **Build Command**: `npm install && npx prisma generate && npm run build`
 - **Start Command**: `npm start`
+
 
 ---
 
