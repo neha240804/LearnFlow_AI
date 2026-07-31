@@ -34,7 +34,6 @@ Traditional online learning follows a rigid, "one-size-fits-all" path. Students 
 | 🎯 **Diagnostic Assessment** | Evaluates current knowledge to detect weak foundation concepts before tailoring a roadmap. |
 | 📚 **OCR & PDF Note Parser** | Upload handwritten/photo notes or multi-page PDFs to extract text, key points, and auto-generate tests. |
 | 🗺️ **Adaptive Roadmaps** | Generates sequenced, step-by-step learning modules based on target difficulty and mastery. |
-| 🤖 **24/7 AI Tutor Chat** | Embedded AI tutor within lessons that answers student questions with backoff rate-limit handling. |
 | 📊 **Learning Dashboard** | Complete analytics on total XP, daily streaks, average confidence scores, and topic mastery. |
 | 👤 **User Profile & History** | Persists uploaded notes, summary cards, and quiz attempts with full historical tracking. |
 | 🔐 **JWT Auth & Data Persistence** | Secure authentication with encrypted passwords and relational database storage via Prisma. |
@@ -70,7 +69,7 @@ Traditional online learning follows a rigid, "one-size-fits-all" path. Students 
 - **Backend API**: Node.js, Express.js, JWT, Bcrypt, Multer
 - **Database & ORM**: PostgreSQL (hosted on Neon DB), Prisma ORM v6
 - **AI & ML Integration**:
-  - **Groq SDK** (`llama-3.1-8b-instant`, `llama-3.3-70b-versatile`) — Fast inference for roadmap & tutor chat.
+  - **Groq SDK** (`llama-3.1-8b-instant`, `llama-3.3-70b-versatile`) — Fast LLM inference for custom roadmap generation.
   - **Google GenAI** (`@google/genai`) — Analytical evaluation.
   - **OCR & Document Extraction**: `tesseract.js` for image parsing + `pdf-parse` for multi-page documents.
 
@@ -94,7 +93,7 @@ Traditional online learning follows a rigid, "one-size-fits-all" path. Students 
 - `POST /api/upload-notes/:noteId/quiz-result` — Save quiz score & award XP for note quizzes
 - `GET /api/concepts/:id/content` — Fetch full micro-lesson content for a concept
 - `GET /api/concepts/:id/quiz` — Fetch concept-specific practice quiz
-- `POST /api/ask-ai` — Submit a question to the AI STEM tutor
+
 
 ---
 
