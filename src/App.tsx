@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import ScrollToTop from "./components/ScrollToTop";
 
 import Landing from "./pages/Landing";
 import Register from "./pages/Register";
@@ -18,6 +19,7 @@ import DocumentExplanation from "./pages/DocumentExplanation";
 function App() {
   return (
     <Routes>
+      <ScrollToTop />
       {/* Landing */}
       <Route path="/" element={<Landing />} />
 
