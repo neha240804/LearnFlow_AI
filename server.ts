@@ -22,7 +22,7 @@ import authRoutes from "./src/server/routes/auth";
 import profileRoutes from "./src/server/routes/profile";
 import progressRoutes from "./src/server/routes/progress";
 import { authenticate } from "./src/server/middleware/auth";
-const PORT = process.env.PORT || 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 async function startServer() {
   

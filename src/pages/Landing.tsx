@@ -16,11 +16,11 @@ const Landing = () => {
         <section className="flex flex-col items-center justify-center text-center py-20 space-y-6">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600 text-xs font-bold tracking-wide">
             <Sparkles size={13} className="text-amber-400" />
-            <span>Next-Generation Adaptive STEM AI</span>
+            <span>Next-Generation Adaptive AI</span>
           </div>
 
           <h1 className="text-4xl sm:text-6xl font-black text-slate-900 leading-tight tracking-tight">
-            Learn STEM Smarter,<br />
+            Learn Smarter,<br />
             <span className="gradient-text-indigo">Not Harder.</span>
           </h1>
 

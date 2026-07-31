@@ -58,7 +58,7 @@ export default function UploadBox({
         </div>
 
         <p className="text-sm text-slate-500 mb-4 leading-relaxed">
-          Upload any STEM study note or PDF document to generate a simple explanation & MCQ practice test.
+          Upload any study note or PDF document to generate a simple explanation & MCQ practice test.
         </p>
 
         {/* Format Guidance Grid */}

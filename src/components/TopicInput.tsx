@@ -24,7 +24,7 @@ export default function TopicInput({
             <div className="p-2 rounded-xl bg-indigo-100 text-indigo-600">
               <BookOpen size={20} />
             </div>
-            <h2 className="text-lg font-bold text-slate-900">Enter STEM Topic</h2>
+            <h2 className="text-lg font-bold text-slate-900">Enter Topic</h2>
           </div>
           <span className="text-xs font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 rounded-full px-3 py-1">
             Interactive Search

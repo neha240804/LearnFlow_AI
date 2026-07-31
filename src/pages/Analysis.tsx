@@ -40,7 +40,7 @@ export default function Analysis() {
               {state.topic}
             </h1>
             <p className="text-slate-500 text-sm mt-1">
-              Personalized concept roadmap generated specifically for your target STEM topic.
+              Personalized concept roadmap generated specifically for your target topic.
             </p>
           </div>
 

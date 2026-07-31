@@ -55,7 +55,7 @@ export default function Navbar() {
               LearnFlow <span className="text-indigo-600 font-black">AI</span>
             </h1>
             <p className="text-xs font-semibold text-slate-500 tracking-wide">
-              Personalized STEM Intelligence
+              Personalized AI Learning
             </p>
           </div>
         </div>

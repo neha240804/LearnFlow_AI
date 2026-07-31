@@ -118,7 +118,7 @@ export default function Dashboard() {
               📊 Learning Dashboard
             </h1>
             <p className="text-slate-500 text-sm mt-1.5">
-              Welcome back, <span className="font-semibold text-indigo-600">{data?.name || "Student"}</span>! Track your STEM mastery and overall progress.
+              Welcome back, <span className="font-semibold text-indigo-600">{data?.name || "Student"}</span>! Track your mastery and overall progress.
             </p>
           </div>
 

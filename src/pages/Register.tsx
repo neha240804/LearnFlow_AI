@@ -45,7 +45,7 @@ export default function Register() {
             <Sparkles size={13} className="absolute -top-1 -right-1 text-amber-300 animate-pulse" />
           </div>
           <h1 className="text-2xl font-extrabold text-slate-900">Create Account 🚀</h1>
-          <p className="text-slate-500 text-xs mt-1.5">Join LearnFlow AI and start your personalized STEM journey.</p>
+          <p className="text-slate-500 text-xs mt-1.5">Join LearnFlow AI and start your personalized learning journey.</p>
         </div>
 
         <div className="space-y-3.5">

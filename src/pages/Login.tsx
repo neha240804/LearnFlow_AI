@@ -43,7 +43,7 @@ export default function Login() {
             <Sparkles size={13} className="absolute -top-1 -right-1 text-amber-300 animate-pulse" />
           </div>
           <h1 className="text-2xl font-extrabold text-slate-900">Welcome Back 👋</h1>
-          <p className="text-slate-500 text-xs mt-1.5">Continue your personalized STEM learning journey.</p>
+          <p className="text-slate-500 text-xs mt-1.5">Continue your personalized learning journey.</p>
         </div>
 
         <div className="space-y-4">
