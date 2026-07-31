@@ -8,25 +8,14 @@ const client = new OpenAI({
   baseURL: "https://api.groq.com/openai/v1",
 });
 
-const MODEL = "llama-3.3-70b-versatile";
-/**
- * A single, module-level Gemini client shared by every function in this
- * file. Creating one client and reusing it avoids the overhead (and
- * inconsistency) of re-instantiating the SDK on every request.
- *
- * The SDK reads GEMINI_API_KEY automatically, but we pass it explicitly
- * for clarity and to fail fast with a readable error if it's missing.
- */
+const PRIMARY_MODEL = "llama-3.3-70b-versatile";
+const FALLBACK_MODELS = ["llama-3.1-8b-instant", "gemma2-9b-it"];
+
 if (!process.env.GROQ_API_KEY) {
-  // We don't throw here — throwing at module-load time would crash the
-  // whole server on import. Instead we log loudly; every function below
-  // will still fail gracefully (via its try/catch) if the key is absent.
   console.warn(
-    "[ai.ts] WARNING: ai_API_KEY is not set. All Gemini calls will fail and fallback data will be used."
+    "[ai.ts] WARNING: GROQ_API_KEY is not set. All AI calls will fail and fallback data will be used."
   );
 }
-
-
 
 // ───────────────────────────────────────────────────────────────────────────
 // SHARED TYPES
@@ -67,73 +56,87 @@ export interface ConceptContentResult {
 }
 
 export interface QuizQuestion {
-
-    question: string;
-
-    options: string[];
-
-    correctAnswer: number;
-
-    explanation: string;
-
+  question: string;
+  options: string[];
+  correctAnswer: number;
+  explanation: string;
 }
 
 export interface ConceptQuizResult {
-
-    questions: QuizQuestion[];
-
+  questions: QuizQuestion[];
 }
 
 async function callAI(prompt: string): Promise<string> {
-  const executeCall = async () => {
-    const response = await client.chat.completions.create({
-      model: MODEL,
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are an expert STEM educator. Always return ONLY valid JSON. Never use markdown or code blocks.",
-        },
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
-      temperature: 0.6,
-      response_format: {
-        type: "json_object",
-      },
-    });
-    return response.choices[0].message.content;
-  };
+  const modelsToTry = [PRIMARY_MODEL, ...FALLBACK_MODELS];
+  let lastError: any = null;
 
-  // Retry helper with exponential backoff and jitter
-  const retryWithBackoff = async <T>(fn: () => Promise<T>, retries = 4, delay = 1500): Promise<T> => {
-    try {
-      return await fn();
-    } catch (error: any) {
-      const isRateLimit =
-        error.status === 429 ||
-        error.statusCode === 429 ||
-        (error.message && (error.message.includes("Rate limit") || error.message.includes("429"))) ||
-        error.code === "rate_limit_exceeded";
+  for (let mIndex = 0; mIndex < modelsToTry.length; mIndex++) {
+    const currentModel = modelsToTry[mIndex];
 
-      if (isRateLimit && retries > 0) {
-        console.warn(`[Groq AI.ts Rate Limit] Hit 429. Retrying in ${delay}ms... (${retries} retries left)`);
-        await new Promise((resolve) => setTimeout(resolve, delay));
-        return retryWithBackoff(fn, retries - 1, delay * 2 + Math.random() * 500);
+    const executeCall = async () => {
+      const response = await client.chat.completions.create({
+        model: currentModel,
+        messages: [
+          {
+            role: "system",
+            content:
+              "You are an expert STEM educator. Always return ONLY valid JSON. Never use markdown or code blocks.",
+          },
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+        temperature: 0.6,
+        response_format: {
+          type: "json_object",
+        },
+      });
+      return response.choices[0]?.message?.content;
+    };
+
+    // Retry helper with backoff for the current model
+    const retryWithBackoff = async <T>(fn: () => Promise<T>, retries = 2, delay = 1000): Promise<T> => {
+      try {
+        return await fn();
+      } catch (error: any) {
+        const isRateLimit =
+          error.status === 429 ||
+          error.statusCode === 429 ||
+          (error.message && (error.message.includes("Rate limit") || error.message.includes("429"))) ||
+          error.code === "rate_limit_exceeded";
+
+        if (isRateLimit) {
+          if (retries > 0) {
+            console.warn(`[Groq AI.ts Rate Limit] ${currentModel} hit 429. Retrying in ${delay}ms...`);
+            await new Promise((resolve) => setTimeout(resolve, delay));
+            return retryWithBackoff(fn, retries - 1, delay * 1.5);
+          }
+        }
+        throw error;
       }
-      throw error;
+    };
+
+    try {
+      const text = await retryWithBackoff(executeCall);
+      if (text) return text;
+    } catch (err: any) {
+      lastError = err;
+      const isRateLimit =
+        err.status === 429 ||
+        err.statusCode === 429 ||
+        (err.message && (err.message.includes("Rate limit") || err.message.includes("429"))) ||
+        err.code === "rate_limit_exceeded";
+
+      if (isRateLimit && mIndex < modelsToTry.length - 1) {
+        console.warn(`[Groq AI.ts Switch] Rate limit reached on ${currentModel}. Switching to fallback model: ${modelsToTry[mIndex + 1]}`);
+        continue;
+      }
     }
-  };
-
-  const text = await retryWithBackoff(executeCall);
-
-  if (!text) {
-    throw new Error("Groq returned an empty response.");
   }
 
-  return text;
+  if (lastError) throw lastError;
+  throw new Error("Groq returned an empty response.");
 }
 /**
  * Safely extracts a JSON object/array from a raw Gemini text response.
@@ -393,11 +396,14 @@ export async function aiGenerateRoadmap(
   topicTitle: string,
   userNotes?: string
 ): Promise<RoadmapResult> {
-  const notesSection = userNotes
+  // Limit to ~12 000 chars (~8-10 pages) to stay within token budgets while
+  // still giving the AI enough context to build a high-quality roadmap.
+  const notesSnippet = userNotes ? userNotes.slice(0, 12000) : "";
+  const notesSection = notesSnippet
     ? `The learner has also provided their own notes below. PRIORITIZE these notes when deciding which concepts to include and how to order them — treat them as the primary source of truth, and use your general knowledge only to fill gaps or provide structure.
 ---
 USER NOTES:
-${userNotes}
+${notesSnippet}
 ---`
     : "The learner has not provided any notes, so build the roadmap from general best-practice knowledge of this topic.";
 
@@ -432,6 +438,52 @@ Do not include markdown formatting, code fences, comments, or any text outside t
     buildRoadmapFallback(topicTitle)
   );
 }
+
+/**
+ * Identifies the main STEM topic title and key concepts from extracted notes text.
+ */
+export async function aiIdentifyTopicFromNotes(
+  notesText: string
+): Promise<{ topic: string; keyConcepts: string[] }> {
+  const prompt = `You are an expert STEM curriculum analyzer for LearnFlow AI.
+Analyze the following student study notes or document text:
+
+---
+${notesText.slice(0, 12000)}
+---
+
+Your task:
+1. Identify the single primary STEM topic title (e.g., "Linear Algebra", "Cellular Respiration", "Newton's Laws", "Operating Systems", "Organic Chemistry").
+2. Extract between 3 and 7 key concepts covered in the text.
+
+Return ONLY valid JSON with this exact shape and no additional text:
+{
+  "topic": string,
+  "keyConcepts": [string]
+}`;
+
+  try {
+    const rawText = await callAI(prompt);
+    const parsed = extractJson<{ topic?: string; keyConcepts?: string[] }>(rawText);
+    if (parsed && typeof parsed.topic === "string" && parsed.topic.trim().length > 0) {
+      return {
+        topic: parsed.topic.trim(),
+        keyConcepts: Array.isArray(parsed.keyConcepts)
+          ? parsed.keyConcepts.filter((c) => typeof c === "string")
+          : [],
+      };
+    }
+  } catch (err) {
+    console.error("[ai.ts] Topic identification failed:", err);
+  }
+
+  return {
+    topic: "STEM Topic Notes",
+    keyConcepts: ["Foundational Concept"],
+  };
+}
+
+
 
 // ───────────────────────────────────────────────────────────────────────────
 // 2. DIAGNOSTIC QUIZ GENERATION
@@ -623,3 +675,150 @@ Return ONLY JSON.
   );
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// UPLOADED NOTES ANALYSIS
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface StudyNoteQuestion {
+  question: string;
+  options: string[]; // exactly 4
+  correctAnswer: number; // 0-indexed
+  explanation: string;
+}
+
+export interface StudyNoteAnalysisResult {
+  subject: string;
+  topic: string;
+  difficulty: "Beginner" | "Intermediate" | "Advanced";
+  summary: string;
+  explanation: string;
+  keyPoints: string[];
+  commonMistakes: string[];
+  questions: StudyNoteQuestion[];
+  nextTopics: string[];
+}
+
+/**
+ * Takes raw text extracted from a student's uploaded study notes document (1 or more pages)
+ * and returns a structured, student-friendly analysis with a quiz.
+ */
+export async function aiAnalyzeStudyNotes(
+  extractedText: string
+): Promise<StudyNoteAnalysisResult> {
+  // Allow up to ~20 000 chars (~12-15 pages of typed notes) — stays well within Groq's context window
+  const snippet = extractedText.slice(0, 20000);
+
+  const prompt = `You are an expert, friendly STEM tutor inside LearnFlow AI.
+A student has uploaded a study notes document (may be one or more pages). Read ALL of it carefully and return a detailed JSON analysis.
+
+NOTE TEXT:
+---
+${snippet}
+---
+
+Return ONLY a single valid JSON object with EXACTLY this structure (no markdown, no code fences):
+{
+  "subject": "<broad academic subject — e.g. Physics, Mathematics, Biology>",
+  "topic": "<specific topic name identified from the note>",
+  "difficulty": "<one of: Beginner, Intermediate, Advanced>",
+  "summary": "<3-5 sentence concise summary of the entire note>",
+  "explanation": "<explain the full content in simple, student-friendly language — use analogies and everyday examples, 150-250 words>",
+  "keyPoints": [
+    "<key point or important concept from the note — write 4-7 short bullet-style items>"
+  ],
+  "commonMistakes": [
+    "<common mistake students make on this topic — write 3-5 items>"
+  ],
+  "questions": [
+    {
+      "question": "<question text based strictly on the note>",
+      "options": ["<A>", "<B>", "<C>", "<D>"],
+      "correctAnswer": <0-indexed integer 0-3>,
+      "explanation": "<brief explanation of why the answer is correct>"
+    }
+  ],
+  "nextTopics": ["<follow-on topic to study next — 3-5 items>"]
+}
+
+Strict rules:
+- questions: generate between 5 and 15 questions covering the breadth of the document. ALL derived strictly from the uploaded text. Do NOT invent questions about topics not present in the document.
+- Each question must have EXACTLY 4 options.
+- correctAnswer is 0-based (0=A, 1=B, 2=C, 3=D).
+- difficulty reflects complexity of the source material, not your explanation.
+- keyPoints: 4-10 short items (more pages = more key points).
+- commonMistakes: 3-5 items.
+- nextTopics: 3-5 items.`;
+
+  const fallback: StudyNoteAnalysisResult = {
+    subject: "General",
+    topic: "Uploaded Study Note",
+    difficulty: "Intermediate",
+    summary: "This note covers key academic concepts. Review the breakdown below.",
+    explanation:
+      "The uploaded note contains important study material. Our AI has prepared a student-friendly breakdown to help you understand and retain the content.",
+    keyPoints: ["Review the core concepts covered in this note."],
+    commonMistakes: ["Skipping foundational concepts before moving to advanced topics."],
+    questions: [
+      {
+        question: "What is the primary focus of this study note?",
+        options: [
+          "A general academic overview",
+          "Advanced theoretical concepts",
+          "Practical engineering applications",
+          "Historical context only",
+        ],
+        correctAnswer: 0,
+        explanation: "The note provides a general academic overview of the topic.",
+      },
+    ],
+    nextTopics: ["Explore related prerequisite concepts", "Practice problems on this topic"],
+  };
+
+  try {
+    const rawText = await callAI(prompt);
+    const parsed = extractJson<Partial<StudyNoteAnalysisResult>>(rawText);
+
+    if (
+      parsed &&
+      typeof parsed.subject === "string" &&
+      typeof parsed.topic === "string" &&
+      typeof parsed.summary === "string" &&
+      Array.isArray(parsed.questions) &&
+      parsed.questions.length > 0
+    ) {
+      const validDifficulties = ["Beginner", "Intermediate", "Advanced"];
+      return {
+        subject: parsed.subject.trim(),
+        topic: parsed.topic.trim(),
+        difficulty: validDifficulties.includes(parsed.difficulty as string)
+          ? (parsed.difficulty as StudyNoteAnalysisResult["difficulty"])
+          : "Intermediate",
+        summary: parsed.summary.trim(),
+        explanation:
+          typeof parsed.explanation === "string"
+            ? parsed.explanation.trim()
+            : fallback.explanation,
+        keyPoints: Array.isArray(parsed.keyPoints)
+          ? (parsed.keyPoints as string[]).filter((s) => typeof s === "string")
+          : fallback.keyPoints,
+        commonMistakes: Array.isArray(parsed.commonMistakes)
+          ? (parsed.commonMistakes as string[]).filter((s) => typeof s === "string")
+          : fallback.commonMistakes,
+        questions: (parsed.questions as StudyNoteQuestion[]).filter(
+          (q) =>
+            q.question &&
+            Array.isArray(q.options) &&
+            q.options.length === 4 &&
+            typeof q.correctAnswer === "number"
+        ),
+        nextTopics: Array.isArray(parsed.nextTopics)
+          ? (parsed.nextTopics as string[]).filter((s) => typeof s === "string")
+          : fallback.nextTopics,
+      };
+    }
+  } catch (err) {
+    console.error("[ai.ts] aiAnalyzeStudyNotes failed:", err);
+  }
+
+  return fallback;
+}

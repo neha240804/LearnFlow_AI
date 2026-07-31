@@ -18,6 +18,7 @@ model User {
 
   progress  Progress[]
   quizzes   QuizAttempt[]
+  notes     UploadedNote[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -62,4 +63,29 @@ model QuizAttempt {
   user       User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt  DateTime @default(now())
+}
+
+model UploadedNote {
+  id              String   @id @default(cuid())
+
+  fileName        String
+  fileType        String
+  fileSize        Int
+
+  extractedText   String   @db.Text
+  identifiedTopic String?
+  subject         String   @default("General")
+  keyConcepts     String[]
+  summary         String   @db.Text @default("")
+  difficulty      String   @default("Intermediate")
+
+  // Quiz results from this upload session
+  quizScore       Int      @default(0)
+  quizTotal       Int      @default(0)
+  quizAnswers     Json     @default("[]")
+
+  userId          String
+  user            User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt       DateTime @default(now())
 }

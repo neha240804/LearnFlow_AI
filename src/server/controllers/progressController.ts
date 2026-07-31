@@ -17,20 +17,28 @@ export const saveProgress = async (req: any, res: Response) => {
       timeSpent = 0,
     } = req.body;
 
+    // Check if this topic already has a progress record (i.e., it's a revisit)
+    const existing = await prisma.progress.findUnique({
+      where: { userId_topic: { userId, topic } },
+    });
+
+    const isRevisit = !!existing;
+    const prevMastery = existing?.mastery ?? 0;
+    const masteryImprovement = Math.max(0, mastery - prevMastery);
+
     const progress = await prisma.progress.upsert({
       where: {
-        userId_topic: {
-          userId,
-          topic,
-        },
+        userId_topic: { userId, topic },
       },
       update: {
         confidence,
         mastery,
-        weakConcepts,
-        strongConcepts,
+        // Only overwrite weak/strong concepts if non-empty (i.e., sent by quiz)
+        ...(weakConcepts.length > 0 ? { weakConcepts } : {}),
+        ...(strongConcepts.length > 0 ? { strongConcepts } : {}),
         attempts: { increment: 1 },
-        completed,
+        // Mark completed if mastery >= 80%
+        completed: mastery >= 80 ? true : completed,
         timeSpent: { increment: timeSpent },
       },
       create: {
@@ -42,21 +50,33 @@ export const saveProgress = async (req: any, res: Response) => {
         weakConcepts,
         strongConcepts,
         attempts: attempts || 1,
-        completed,
+        completed: mastery >= 80 ? true : completed,
         timeSpent: timeSpent || 0,
       },
     });
 
-    // Award XP to user in PostgreSQL
-    const earnedXP = 50 + (mastery ?? 0) + (completed ? 30 : 0);
-    await prisma.user.update({
-      where: { id: userId },
-      data: {
-        xp: { increment: earnedXP },
-      },
-    }).catch(console.error);
+    // XP logic:
+    // - First attempt: full XP (base + mastery + completion bonus)
+    // - Revisit: only award XP for measurable improvement in mastery
+    let earnedXP = 0;
+    if (!isRevisit) {
+      earnedXP = 50 + (mastery ?? 0) + (completed || mastery >= 80 ? 30 : 0);
+    } else if (masteryImprovement > 0) {
+      // Award XP proportional to improvement (max 60 XP per revisit)
+      earnedXP = Math.min(60, Math.round(masteryImprovement * 0.6));
+      if (mastery >= 80 && !existing?.completed) {
+        earnedXP += 30; // Completion bonus for first time reaching mastery
+      }
+    }
 
-    res.json({ success: true, progress });
+    if (earnedXP > 0) {
+      await prisma.user.update({
+        where: { id: userId },
+        data: { xp: { increment: earnedXP } },
+      }).catch(console.error);
+    }
+
+    res.json({ success: true, progress, earnedXP, isRevisit });
   } catch (err) {
     console.log(err);
     res.status(500).json({ success: false, message: "Error saving progress" });

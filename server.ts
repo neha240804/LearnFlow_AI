@@ -4,14 +4,18 @@ dotenv.config();
 import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
-import multer from "multer";
+import jwt from "jsonwebtoken";
 import fs from "fs";
+import multer from "multer";
 import {
   aiGenerateRoadmap,
   aiGenerateConceptContent,
   aiGenerateDiagnosticQuiz,
   aiGenerateConceptQuiz,
+  aiIdentifyTopicFromNotes,
+  aiAnalyzeStudyNotes,
 } from "./src/server/ai.ts";
+import { extractTextFromFile } from "./src/server/services/fileExtractor.ts";
 import OpenAI from "openai";
 import prisma from "./src/server/config/prisma";
 import authRoutes from "./src/server/routes/auth";
@@ -23,15 +27,12 @@ const PORT = 3000;
 async function startServer() {
   
   const app = express();
-  const upload = multer({
-    dest: "uploads/",
-  });
 
-  if (!fs.existsSync("uploads")) {
-    fs.mkdirSync("uploads");
-  }
+  // Multer — file uploads for the notes feature (multi-page PDFs supported)
+  if (!fs.existsSync("uploads")) fs.mkdirSync("uploads");
+  const upload = multer({ dest: "uploads/", limits: { fileSize: 25 * 1024 * 1024 } });
 
-  // Middleware to parse incoming JSON with high limits for documents/notes
+  // Middleware to parse incoming JSON
   app.use(express.json({ limit: '15mb' }));
   app.use(express.urlencoded({ extended: true, limit: '15mb' }));
   app.use("/api/auth", authRoutes);
@@ -74,31 +75,187 @@ async function startServer() {
       res.status(500).json({ message: "Failed to record quiz attempt" });
     }
   });
-  app.post("/api/analyze", async (req, res) => {
-    try {
-      const { topic, notes } = req.body;
 
-      if (!topic) {
-        return res.status(400).json({
-          error: "Topic is required.",
+  // ── Upload Notes ──────────────────────────────────────────────────────────
+  app.post("/api/upload-notes", upload.single("file"), async (req: any, res: any) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "No file uploaded." });
+      }
+
+      const fileBuffer = fs.readFileSync(req.file.path);
+      try { fs.unlinkSync(req.file.path); } catch (_) {}
+
+      console.log(`[/api/upload-notes] Received file: "${req.file.originalname}" (${req.file.mimetype})`);
+
+      const extraction = await extractTextFromFile(
+        fileBuffer,
+        req.file.mimetype,
+        req.file.originalname
+      );
+
+      console.log(`[/api/upload-notes] method=${extraction.method}, confidence=${extraction.confidence}, chars=${extraction.text.length}`);
+
+      const analysis = await aiAnalyzeStudyNotes(extraction.text);
+
+      // ── Persist to DB if user is authenticated ────────────────────────────
+      // Try to read JWT from Authorization header (optional — works for guests too)
+      let userId: string | null = null;
+      const authHeader = req.headers.authorization as string | undefined;
+      if (authHeader && authHeader.startsWith("Bearer ")) {
+        try {
+          const token = authHeader.slice(7);
+          const payload = jwt.verify(token, process.env.JWT_SECRET as string) as any;
+          userId = payload?.id ?? payload?.userId ?? null;
+        } catch (_) {}
+      }
+
+      if (userId) {
+        // 1. Save the uploaded note record
+        const noteRecord = await prisma.uploadedNote.create({
+          data: {
+            userId,
+            fileName:        req.file.originalname,
+            fileType:        req.file.mimetype,
+            fileSize:        req.file.size,
+            extractedText:   extraction.text.slice(0, 10000), // cap stored text at 10k chars
+            identifiedTopic: analysis.topic,
+            subject:         analysis.subject,
+            keyConcepts:     analysis.keyPoints ?? [],
+            summary:         analysis.summary ?? "",
+            difficulty:      analysis.difficulty ?? "Intermediate",
+            quizScore:       0, // will be updated when the student submits the quiz
+            quizTotal:       analysis.questions?.length ?? 0,
+            quizAnswers:     [],
+          },
+        });
+
+        // 2. Record a QuizAttempt placeholder (score=0 until quiz is submitted)
+        await prisma.quizAttempt.create({
+          data: {
+            userId,
+            topic:      analysis.topic,
+            score:      0,
+            confidence: 0,
+            answers:    [],
+          },
+        });
+
+        // 3. Award 20 XP for uploading and analysing a document
+        await prisma.user.update({
+          where: { id: userId },
+          data:  { xp: { increment: 20 } },
+        }).catch(console.error);
+
+        console.log(`[/api/upload-notes] Saved note (id=${noteRecord.id}) and quiz attempt for user ${userId}`);
+
+        return res.json({
+          type:             "notes",
+          noteId:           noteRecord.id,
+          fileName:         req.file.originalname,
+          extractionMethod: extraction.method,
+          confidence:       extraction.confidence,
+          ...analysis,
         });
       }
 
-      // Generate roadmap
-      const roadmapResult = await aiGenerateRoadmap(
-        topic,
-        notes
-      );
+      // Guest (no token) — return analysis only, no DB save
+      return res.json({
+        type:             "notes",
+        fileName:         req.file.originalname,
+        extractionMethod: extraction.method,
+        confidence:       extraction.confidence,
+        ...analysis,
+      });
 
-      // Generate diagnostic quiz
+    } catch (error) {
+      console.error("[/api/upload-notes]", error);
+      return res.status(500).json({ error: "Failed to analyse uploaded note. Please try again." });
+    }
+  });
+
+  // ── Save quiz result after student submits the upload quiz ────────────────
+  app.post("/api/upload-notes/:noteId/quiz-result", async (req: any, res: any) => {
+    try {
+      const { noteId } = req.params;
+      const { score, total, answers } = req.body as { score: number; total: number; answers: any[] };
+
+      // Verify JWT
+      const authHeader = req.headers.authorization as string | undefined;
+      if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+      let userId: string;
+      try {
+        const token = authHeader.slice(7);
+        const payload = jwt.verify(token, process.env.JWT_SECRET as string) as any;
+        userId = payload?.id ?? payload?.userId;
+      } catch {
+        return res.status(401).json({ error: "Invalid token" });
+      }
+
+      // Update the UploadedNote with real quiz results
+      const note = await prisma.uploadedNote.update({
+        where: { id: noteId },
+        data: {
+          quizScore:   score,
+          quizTotal:   total,
+          quizAnswers: answers ?? [],
+        },
+      });
+
+      // Award XP based on performance: 10 per correct + 20 bonus for ≥70%
+      const xpEarned = score * 10 + (score / total >= 0.7 ? 20 : 0);
+      await prisma.user.update({
+        where: { id: userId },
+        data:  { xp: { increment: xpEarned } },
+      }).catch(console.error);
+
+      // Update the most recent QuizAttempt for this topic with the real score
+      const attempt = await prisma.quizAttempt.findFirst({
+        where: { userId, topic: note.identifiedTopic ?? "" },
+        orderBy: { createdAt: "desc" },
+      });
+      if (attempt) {
+        await prisma.quizAttempt.update({
+          where: { id: attempt.id },
+          data:  { score, confidence: Math.round((score / total) * 100), answers: answers ?? [] },
+        });
+      }
+
+      return res.json({ success: true, xpEarned });
+    } catch (error) {
+      console.error("[/api/upload-notes/:noteId/quiz-result]", error);
+      return res.status(500).json({ error: "Failed to save quiz result." });
+    }
+  });
+
+  app.post("/api/analyze", async (req: any, res: any) => {
+    try {
+      const { topic, notes } = req.body || {};
+      let identifiedTopic = topic;
+
+      if ((!identifiedTopic || !identifiedTopic.trim()) && notes) {
+        const identified = await aiIdentifyTopicFromNotes(notes);
+        identifiedTopic = identified.topic;
+      }
+
+      if (!identifiedTopic || !identifiedTopic.trim()) {
+        return res.status(400).json({
+          error: "Please enter a topic to analyze.",
+        });
+      }
+
+      const roadmapResult = await aiGenerateRoadmap(identifiedTopic, notes);
       const quizResult = await aiGenerateDiagnosticQuiz(
-        topic,
+        identifiedTopic,
         roadmapResult.concepts
       );
 
       return res.json({
+        type: "roadmap",
         success: true,
-        topic,
+        topic: identifiedTopic,
         roadmap: roadmapResult.concepts,
         difficulty: roadmapResult.difficulty,
         estimatedTime: roadmapResult.estimatedTime,
@@ -106,15 +263,11 @@ async function startServer() {
       });
 
     } catch (error) {
-
-      console.error(error);
-
-      return res.status(500).json({
-        error: "Failed to analyze topic."
-      });
-
+      console.error("[/api/analyze]", error);
+      return res.status(500).json({ error: "Failed to analyze. Please try again." });
     }
   });
+
   // ==========================================
   // LESSON MODULE APIS
   // ==========================================

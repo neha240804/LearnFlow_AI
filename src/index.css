@@ -1,1 +1,107 @@
 @import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+    color: #0f172a;
+    background-color: #f8fafc;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* ── Typography & UI System Utilities ────────────────────────────────────── */
+.app-heading-lg {
+  font-size: 1.875rem; /* 30px */
+  line-height: 2.25rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: #0f172a;
+}
+
+.app-heading-md {
+  font-size: 1.25rem; /* 20px */
+  line-height: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: #0f172a;
+}
+
+.app-heading-sm {
+  font-size: 1rem; /* 16px */
+  line-height: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.app-body {
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.4rem;
+  font-weight: 500;
+  color: #475569;
+}
+
+.app-caption {
+  font-size: 0.75rem; /* 12px */
+  line-height: 1rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+/* ── Card Containers ────────────────────────────────────────────────────── */
+.glass-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+/* ── Custom keyframe animations ─────────────────────────────────────────── */
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulseRing {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(99,102,241,0.3); }
+  50%       { box-shadow: 0 0 0 8px rgba(99,102,241,0); }
+}
+
+/* Animate-in utility */
+.animate-fade-in-up {
+  animation: fadeInUp 0.4s ease-out both;
+}
+
+/* Staggered children (add delay via style) */
+.animate-fade-in-up-delay-1 { animation: fadeInUp 0.4s 0.1s ease-out both; }
+.animate-fade-in-up-delay-2 { animation: fadeInUp 0.4s 0.2s ease-out both; }
+.animate-fade-in-up-delay-3 { animation: fadeInUp 0.4s 0.3s ease-out both; }
+
+/* ── Gradient text ──────────────────────────────────────────────────────── */
+.gradient-text-indigo {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 60%, #ec4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-text-emerald {
+  background: linear-gradient(135deg, #059669 0%, #10b981 50%, #06b6d4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ── Smooth custom scrollbars ──────────────────────────────────────────── */
+::-webkit-scrollbar { width: 7px; height: 7px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* ── Callout card borders ──────────────────────────────────────────────── */
+.callout-did-you-know  { border-left: 4px solid #6366f1; background: #eef2ff; }
+.callout-think-about   { border-left: 4px solid #f59e0b; background: #fffbeb; }
+.callout-fun-fact      { border-left: 4px solid #10b981; background: #ecfdf5; }
+.callout-challenge     { border-left: 4px solid #ec4899; background: #fdf2f8; }

@@ -13,6 +13,7 @@ import Analysis from "./pages/Analysis";
 import ConceptQuiz from "./pages/ConceptQuiz";
 import Profile from "./pages/Profile";
 import LearningProfile from "./pages/LearningProfile";
+import DocumentExplanation from "./pages/DocumentExplanation";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
       {/* Main Flow */}
       <Route path="/home" element={<Home />} />
       <Route path="/analysis" element={<Analysis />} />
+      <Route path="/explanation" element={<DocumentExplanation />} />
       <Route path="/diagnostic" element={<Diagnostic />} />
       <Route path="/learning-profile" element={<LearningProfile />} />
       <Route path="/profile" element={<Profile />} />

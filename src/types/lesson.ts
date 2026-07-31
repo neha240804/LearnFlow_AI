@@ -1,3 +1,9 @@
+export interface VideoResource {
+  title: string;
+  channel: string;
+  url: string;
+}
+
 export interface LessonTopic {
   simpleExplanation: string;
   detailedExplanation: string;
@@ -6,6 +12,7 @@ export interface LessonTopic {
   formulas: string[];
   commonMistakes: string[];
   summary: string;
+  videos?: VideoResource[];
 }
 
 export interface RoadmapConcept {

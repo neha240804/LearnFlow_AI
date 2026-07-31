@@ -9,7 +9,31 @@ export const getProfile = async (req: AuthRequest, res: Response) => {
         id: req.user!.id,
       },
       include: {
-        progress: true,
+        progress: {
+          orderBy: { updatedAt: "desc" },
+        },
+        quizzes: {
+          orderBy: { createdAt: "desc" },
+          take: 20,
+        },
+        notes: {
+          orderBy: { createdAt: "desc" },
+          take: 20,
+          select: {
+            id: true,
+            fileName: true,
+            fileType: true,
+            fileSize: true,
+            identifiedTopic: true,
+            subject: true,
+            difficulty: true,
+            summary: true,
+            keyConcepts: true,
+            quizScore: true,
+            quizTotal: true,
+            createdAt: true,
+          },
+        },
       },
     });
 
@@ -33,6 +57,19 @@ export const getProfile = async (req: AuthRequest, res: Response) => {
             ) / user.progress.length
           );
 
+    // Compute total notes uploaded and average quiz score across uploads
+    const totalNotesUploaded = user.notes.length;
+    const notesWithQuiz = user.notes.filter((n) => n.quizTotal > 0);
+    const averageNoteQuizScore =
+      notesWithQuiz.length === 0
+        ? 0
+        : Math.round(
+            notesWithQuiz.reduce(
+              (sum, n) => sum + Math.round((n.quizScore / n.quizTotal) * 100),
+              0
+            ) / notesWithQuiz.length
+          );
+
     res.json({
       id: user.id,
       name: user.name,
@@ -41,7 +78,11 @@ export const getProfile = async (req: AuthRequest, res: Response) => {
       streak: user.streak,
       completedTopics,
       averageConfidence,
+      totalNotesUploaded,
+      averageNoteQuizScore,
       progress: user.progress,
+      quizzes: user.quizzes,
+      uploadedNotes: user.notes,
     });
   } catch (error) {
     console.error(error);

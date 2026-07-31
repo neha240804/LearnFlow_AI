@@ -11,12 +11,16 @@ export default function Diagnostic() {
 
   if (!data || !data.questions) {
     return (
-      <div className="min-h-screen bg-slate-100">
+      <div className="min-h-screen bg-slate-50 flex flex-col">
         <Navbar />
-        <div className="flex items-center justify-center h-[80vh]">
-          <h2 className="text-2xl font-semibold">
-            No Diagnostic Quiz Available
-          </h2>
+        <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
+          <p className="text-slate-600 text-sm font-semibold mb-4">No Diagnostic Quiz Available</p>
+          <button
+            onClick={() => navigate("/home")}
+            className="bg-indigo-600 text-white font-bold text-xs px-6 py-3 rounded-xl shadow-xs hover:bg-indigo-700 transition"
+          >
+            Start Learning
+          </button>
         </div>
       </div>
     );
@@ -40,21 +44,18 @@ export default function Diagnostic() {
     > = {};
 
     questions.forEach((q: any, index: number) => {
-
       if (!conceptScores[q.concept]) {
         conceptScores[q.concept] = {
           correct: 0,
           total: 0,
         };
       }
-
       conceptScores[q.concept].total++;
 
       if (answers[index] === q.correctAnswer) {
         score++;
         conceptScores[q.concept].correct++;
       }
-
     });
 
     const mastery = Math.round(
@@ -65,25 +66,15 @@ export default function Diagnostic() {
     const average: string[] = [];
     const weak: string[] = [];
 
-
     Object.entries(conceptScores).forEach(([concept, value]) => {
-
       const percent = value.correct / value.total;
-
       if (percent >= 0.8) {
-
         strong.push(concept);
-
       } else if (percent >= 0.5) {
-
         average.push(concept);
-
       } else {
-
         weak.push(concept);
-
       }
-
     });
     const token = localStorage.getItem("token");
 
@@ -127,101 +118,73 @@ export default function Diagnostic() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100">
-
+    <div className="min-h-screen bg-slate-50 flex flex-col pb-16">
       <Navbar />
 
-      <div className="max-w-5xl mx-auto py-8 px-6">
+      <main className="max-w-4xl mx-auto w-full px-6 sm:px-8 py-8 space-y-8">
+        <div>
+          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+            🎯 Diagnostic Assessment
+          </h1>
+          <p className="text-slate-500 text-sm mt-1.5 leading-relaxed">
+            Answer honestly so LearnFlow AI can personalize your roadmap and adapt lesson content to your needs.
+          </p>
+        </div>
 
-        <h1 className="text-3xl font-bold">
-          Diagnostic Assessment
-        </h1>
-
-        <p className="text-gray-500 mt-2">
-          Answer honestly so LearnFlow AI can personalize your learning.
-        </p>
-
-        <div className="space-y-6 mt-8">
-
+        <div className="space-y-6">
           {questions.map((question: any, qIndex: number) => (
-
             <div
               key={qIndex}
-              className="bg-white rounded-xl shadow p-6"
+              className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6"
             >
-
-              <div className="mb-2">
-
-                <span className="text-xs px-2 py-1 rounded bg-indigo-100 text-indigo-700">
-
+              <div className="mb-3">
+                <span className="text-xs font-bold px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100">
                   {question.concept}
-
                 </span>
-
               </div>
 
-              <h2 className="font-semibold text-lg">
-
+              <h2 className="font-bold text-base text-slate-900">
                 {qIndex + 1}. {question.questionText}
-
               </h2>
 
               <div className="mt-5 space-y-3">
-
                 {question.options.map(
                   (option: string, optionIndex: number) => (
-
                     <label
                       key={optionIndex}
-                      className={`flex items-center gap-3 rounded-lg border p-3 cursor-pointer hover:bg-indigo-50 transition
-
-                      ${
+                      className={`flex items-center gap-3 rounded-xl border p-3.5 cursor-pointer text-sm font-semibold transition ${
                         answers[qIndex] === optionIndex
-                          ? "border-indigo-500 bg-indigo-50"
-                          : "border-gray-200"
+                          ? "border-indigo-500 bg-indigo-50/80 text-indigo-900 shadow-2xs"
+                          : "border-slate-200/80 text-slate-700 hover:bg-slate-50"
                       }`}
                     >
-
                       <input
                         type="radio"
                         name={`question-${qIndex}`}
                         checked={answers[qIndex] === optionIndex}
                         onChange={() => {
-
                           const updated = [...answers];
-
                           updated[qIndex] = optionIndex;
-
                           setAnswers(updated);
-
                         }}
+                        className="accent-indigo-600 w-4 h-4"
                       />
-
                       <span>{option}</span>
-
                     </label>
                   )
                 )}
-
               </div>
-
             </div>
-
           ))}
-
         </div>
 
-        <div className="mt-10 max-w-sm">
-
+        <div className="max-w-md mx-auto pt-4">
           <PrimaryButton
             text="Submit Assessment"
             onClick={submitQuiz}
           />
-
         </div>
-
-      </div>
-
+      </main>
     </div>
   );
 }

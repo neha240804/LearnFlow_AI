@@ -58,46 +58,59 @@ export default function LearningProfile() {
 
   if (!state.topic && !dbProgress && !loading) {
     return (
-      <div className="min-h-screen bg-slate-100">
+      <div className="min-h-screen bg-slate-50 flex flex-col">
         <Navbar />
-        <div className="max-w-4xl mx-auto p-8 text-center mt-12">
-          <h2 className="text-2xl font-bold text-gray-700">No Learning Profile Found</h2>
-          <p className="text-gray-500 mt-2">Please start from the home page or complete a diagnostic assessment.</p>
+        <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
+          <h2 className="text-xl font-bold text-slate-800">No Learning Profile Found</h2>
+          <p className="text-slate-500 text-sm mt-1 mb-4">Please start from the home page or complete a diagnostic assessment.</p>
+          <button
+            onClick={() => navigate("/home")}
+            className="bg-indigo-600 text-white font-bold text-xs px-6 py-3 rounded-xl shadow-xs hover:bg-indigo-700 transition"
+          >
+            Go to Home Page
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-100">
+    <div className="min-h-screen bg-slate-50 flex flex-col pb-16">
       <Navbar />
 
-      <div className="max-w-6xl mx-auto p-8">
-        <div className="bg-white rounded-2xl shadow p-8">
-          <div className="flex items-center gap-3">
-            <Brain className="text-indigo-600" size={34} />
-            <h1 className="text-3xl font-bold">
-              Your Learning Profile
-            </h1>
+      <main className="max-w-5xl mx-auto w-full px-6 sm:px-8 py-8 space-y-8">
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-8 space-y-8">
+          <div className="flex items-center gap-3 border-b border-slate-100 pb-6">
+            <div className="p-3 bg-indigo-50 text-indigo-600 rounded-2xl border border-indigo-100">
+              <Brain size={32} />
+            </div>
+            <div>
+              <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+                Your Learning Profile
+              </h1>
+              <p className="text-slate-500 text-sm mt-1">
+                Diagnostic summary & adaptive study path for <span className="font-semibold text-indigo-600">{topic}</span>
+              </p>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-            <div className="bg-indigo-50 rounded-xl p-6">
-              <p className="text-gray-500">Mastery</p>
-              <h2 className="text-4xl font-bold mt-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-indigo-50/70 border border-indigo-100 rounded-2xl p-6">
+              <p className="text-xs font-bold text-indigo-600 uppercase tracking-wider">Overall Mastery</p>
+              <h2 className="text-4xl font-black text-slate-900 mt-2">
                 {mastery}%
               </h2>
             </div>
 
-            <div className="bg-green-50 rounded-xl p-6">
-              <p className="text-gray-500">Strong Concepts</p>
+            <div className="bg-emerald-50/70 border border-emerald-100 rounded-2xl p-6">
+              <p className="text-xs font-bold text-emerald-700 uppercase tracking-wider">Strong Concepts</p>
               <div className="mt-3 space-y-2">
                 {strong.length === 0 ? (
-                  <p className="text-sm text-gray-400">None identified yet</p>
+                  <p className="text-xs text-slate-400 font-medium">None identified yet</p>
                 ) : (
                   strong.map((item: string, idx: number) => (
-                    <div key={idx} className="flex items-center gap-2 text-sm text-green-800">
-                      <CheckCircle size={18} className="text-green-600 shrink-0" />
+                    <div key={idx} className="flex items-center gap-2 text-xs font-bold text-emerald-800">
+                      <CheckCircle size={16} className="text-emerald-600 shrink-0" />
                       <span>{item}</span>
                     </div>
                   ))
@@ -105,15 +118,15 @@ export default function LearningProfile() {
               </div>
             </div>
 
-            <div className="bg-red-50 rounded-xl p-6">
-              <p className="text-gray-500">Weak Concepts</p>
+            <div className="bg-rose-50/70 border border-rose-100 rounded-2xl p-6">
+              <p className="text-xs font-bold text-rose-700 uppercase tracking-wider">Focus Concepts</p>
               <div className="mt-3 space-y-2">
                 {weak.length === 0 ? (
-                  <p className="text-sm text-gray-400">None identified yet</p>
+                  <p className="text-xs text-slate-400 font-medium">None identified yet</p>
                 ) : (
                   weak.map((item: string, idx: number) => (
-                    <div key={idx} className="flex items-center gap-2 text-sm text-red-800">
-                      <AlertTriangle size={18} className="text-red-600 shrink-0" />
+                    <div key={idx} className="flex items-center gap-2 text-xs font-bold text-rose-800">
+                      <AlertTriangle size={16} className="text-rose-600 shrink-0" />
                       <span>{item}</span>
                     </div>
                   ))
@@ -123,26 +136,26 @@ export default function LearningProfile() {
           </div>
 
           {/* AI Recommendation */}
-          <div className="mt-8 bg-indigo-50 rounded-xl p-6">
-            <h2 className="font-bold text-2xl text-indigo-900">
-              AI Recommendation
+          <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-indigo-50 border border-indigo-100 rounded-2xl p-6 space-y-2">
+            <h2 className="font-extrabold text-xl text-slate-900 flex items-center gap-2">
+              ✨ AI Recommendation
             </h2>
-            <p className="mt-4 text-gray-700">
-              Based on your diagnostic assessment, your primary target concept is{" "}
-              <strong className="text-indigo-600">{startConcept}</strong>.
+            <p className="text-slate-700 text-sm leading-relaxed">
+              Based on your diagnostic assessment, your primary focus target is{" "}
+              <strong className="text-indigo-600 font-bold">{startConcept}</strong>.
             </p>
-            <p className="mt-2 text-gray-600 text-sm">
-              Estimated learning time: <strong>{estimatedTime}</strong>
+            <p className="text-slate-500 text-xs font-medium">
+              Estimated study time: <strong className="text-slate-800">{estimatedTime}</strong>
             </p>
           </div>
 
           {average.length > 0 && (
-            <div className="mt-6 bg-yellow-50 rounded-xl p-6">
-              <p className="text-gray-500 font-semibold mb-2">Average Concepts</p>
+            <div className="bg-amber-50/70 border border-amber-100 rounded-2xl p-6">
+              <p className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-3">Developing Concepts</p>
               <div className="space-y-2">
                 {average.map((item: string, idx: number) => (
-                  <div key={idx} className="flex items-center gap-2 text-yellow-800">
-                    <Brain size={18} className="text-yellow-600 shrink-0" />
+                  <div key={idx} className="flex items-center gap-2 text-xs font-semibold text-amber-900">
+                    <Brain size={16} className="text-amber-600 shrink-0" />
                     <span>{item}</span>
                   </div>
                 ))}
@@ -150,7 +163,7 @@ export default function LearningProfile() {
             </div>
           )}
 
-          <div className="mt-8 max-w-sm">
+          <div className="max-w-md mx-auto pt-2">
             <PrimaryButton
               text="Start Personalized Learning"
               onClick={() =>
@@ -170,7 +183,7 @@ export default function LearningProfile() {
             />
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
