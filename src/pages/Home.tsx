@@ -83,7 +83,7 @@ export default function Home() {
               👋 Welcome back, <span className="text-indigo-600">{userName}</span>!
             </h1>
             <p className="text-slate-500 text-sm mt-1.5">
-              Continue your personalized STEM learning journey.
+              Learn smarter, not harder.
             </p>
           </div>
           <div className="flex items-center gap-4 bg-slate-50 border border-slate-200 rounded-xl p-4 shrink-0">
