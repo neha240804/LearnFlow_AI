@@ -350,8 +350,8 @@ app.get("/api/concepts/:conceptId/quiz", async (req, res) => {
         baseURL: "https://api.groq.com/openai/v1",
       });
 
-      // Lighter, faster model for simple tutoring questions to prevent 429 Rate Limits on 70B model
-      const model = "llama-3.1-8b-instant";
+      // Lighter, faster model for simple tutoring questions to prevent 429 Rate Limits
+      const model = "groq/compound-mini";
 
       const executeCall = async () => {
         return await groqClient.chat.completions.create({

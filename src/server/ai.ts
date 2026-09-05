@@ -8,8 +8,8 @@ const client = new OpenAI({
   baseURL: "https://api.groq.com/openai/v1",
 });
 
-const PRIMARY_MODEL = "llama-3.3-70b-versatile";
-const FALLBACK_MODELS = ["llama-3.1-8b-instant", "gemma2-9b-it"];
+const PRIMARY_MODEL = "groq/compound";
+const FALLBACK_MODELS = ["groq/compound-mini", "openai/gpt-oss-20b", "qwen/qwen3.6-27b"];
 
 if (!process.env.GROQ_API_KEY) {
   console.warn(
