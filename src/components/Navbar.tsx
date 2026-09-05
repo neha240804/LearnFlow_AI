@@ -1,4 +1,4 @@
-import { GraduationCap, Sparkles, User as UserIcon, Home as HomeIcon } from "lucide-react";
+import { GraduationCap, Sparkles, User as UserIcon, Home as HomeIcon, LogOut } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 
@@ -35,6 +35,13 @@ export default function Navbar() {
 
   const isHome = location.pathname === "/" || location.pathname === "/home";
   const isProfile = location.pathname === "/profile";
+
+  function handleLogout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUser(null);
+    navigate("/");
+  }
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
@@ -92,6 +99,17 @@ export default function Navbar() {
             <UserIcon size={15} />
             <span>My Profile</span>
           </button>
+
+          {user && (
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-red-600 hover:bg-red-50 border border-transparent hover:border-red-200 transition-all duration-200"
+              title="Log out of account"
+            >
+              <LogOut size={15} />
+              <span className="hidden sm:inline">Logout</span>
+            </button>
+          )}
         </div>
 
       </div>

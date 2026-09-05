@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import { RotateCcw, Upload, BookOpen, Award, Flame, Zap, CheckCircle2, TrendingUp } from "lucide-react";
+import { RotateCcw, Upload, BookOpen, Award, Flame, Zap, CheckCircle2, TrendingUp, LogOut } from "lucide-react";
 
 type Progress = {
   id: string; subject: string; topic: string;
@@ -90,6 +90,12 @@ export default function Profile() {
     { label: "Note Quiz Avg", value: `${profile.averageNoteQuizScore ?? 0}%`, icon: Award, color: "rose" },
   ];
 
+  function handleLogout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/");
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 pb-16">
       <Navbar />
@@ -107,9 +113,15 @@ export default function Profile() {
                 <p className="text-slate-500 text-xs mt-0.5">{profile.email}</p>
               </div>
             </div>
-            <button onClick={() => navigate("/home")} className="px-4 py-2 rounded-xl bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-200 transition">
-              Back to Home
-            </button>
+            <div className="flex items-center gap-3">
+              <button onClick={() => navigate("/home")} className="px-4 py-2 rounded-xl bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-200 transition">
+                Back to Home
+              </button>
+              <button onClick={handleLogout} className="px-4 py-2 rounded-xl bg-red-50 border border-red-200 text-xs font-semibold text-red-600 hover:bg-red-100 transition flex items-center gap-1.5">
+                <LogOut size={14} />
+                <span>Log Out</span>
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mt-6">
